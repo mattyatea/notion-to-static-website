@@ -1,5 +1,6 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
+const { siteName } = Astro.props;
 ---
 
 <header class="py-6">
@@ -9,7 +10,7 @@ import ThemeToggle from './ThemeToggle.astro';
         href="/"
         class="text-2xl font-bold hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
       >
-        nanasi-apps.xyz
+        {siteName}
       </a>
     </div>
     <div class="flex items-center gap-6">

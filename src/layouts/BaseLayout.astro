@@ -2,8 +2,8 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-
-const { title = 'nanasi-apps.xyz ブログ', summary } = Astro.props;
+const siteName = process.env.SITE_NAME ?? 'notion to static page';
+const { title = siteName, summary } = Astro.props;
 ---
 
 <!doctype html>
@@ -12,15 +12,15 @@ const { title = 'nanasi-apps.xyz ブログ', summary } = Astro.props;
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
-    <meta property="og:description" content={summary ?? 'nanasi-apps.xyz ブログへようこそ！'} />
-    <meta property="og:site_name" content="nanasi-apps.xyz" />
+    <meta property="og:description" content={summary} />
+    <meta property="og:site_name" content={siteName} />
     <meta property="og:type" content={summary ? 'blog' : 'top'} />
     <meta property="og:title" content={title} />
     <title>{title}</title>
   </head>
   <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <Header />
+      <Header siteName={siteName} />
 
       <main class="py-8">
         <slot />
