@@ -2,51 +2,48 @@ name: Lint Check
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [main]
   pull_request:
-    branches: [ "main" ]
-  workflow_dispatch:
+    branches: [main]
 
 jobs:
-  lint-check:
-    name: Lint Check
+  lint:
+    name: ESLint & Prettier Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 8
-          run_install: false
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'pnpm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
         run: pnpm install
 
       - name: Run ESLint
         run: pnpm lint
-        
-      # エラーが見つかった場合に失敗するが、警告は許容する
-      - name: Check for ESLint errors
-        run: |
-          pnpm dlx eslint . --ext .js,.jsx,.ts,.tsx,.astro --max-warnings 9999 --format json > eslint-report.json || true
-          echo "Checking ESLint report for errors..."
-          if grep -q '"fatal":true' eslint-report.json || grep -q '"severity":2' eslint-report.json; then
-            echo "ESLint found errors in the code. Please fix them before merging."
-            exit 1
-          else
-            echo "No ESLint errors found."
-          fi
-      
-      - name: Upload ESLint report
-        uses: actions/upload-artifact@v4
-        with:
-          name: eslint-report
-          path: eslint-report.json
-          retention-days: 7
+
+      - name: Check formatting with Prettier
+        run: pnpm format:check

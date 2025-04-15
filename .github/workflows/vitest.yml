@@ -2,9 +2,9 @@ name: Vitest
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ['main']
   pull_request:
-    branches: [ "main" ]
+    branches: ['main']
   workflow_dispatch:
 
 jobs:
@@ -31,17 +31,17 @@ jobs:
 
       - name: Run Vitest
         run: pnpm test
-        
+
       - name: Run Vitest with Coverage
         run: pnpm test:coverage
-        
+
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: ./coverage/
           fail_ci_if_error: false
-          
+
       - name: Upload test results
         uses: actions/upload-artifact@v4
         with:
