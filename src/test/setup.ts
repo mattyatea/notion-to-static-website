@@ -22,7 +22,11 @@ vi.mock('@notionhq/client', () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
   (global as unknown).mockRetrieve = mockRetrieve;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   (global as unknown).mockListBlocks = mockListBlocks;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   (global as unknown).mockQueryDB = mockQueryDB;
 
   return {
@@ -53,11 +57,16 @@ vi.mock('react', async () => {
 
 // console関数のモック化（テスト出力を整理するため）
 beforeEach(() => {
-  vi.spyOn(console, 'log').mockImplementation(() => {});
-  vi.spyOn(console, 'debug').mockImplementation(() => {});
-  vi.spyOn(console, 'info').mockImplementation(() => {});
-  vi.spyOn(console, 'warn').mockImplementation(() => {});
-  vi.spyOn(console, 'error').mockImplementation(() => {});
+  vi.spyOn(console, 'log').mockImplementation(() => {
+  });
+  vi.spyOn(console, 'debug').mockImplementation(() => {
+  });
+  vi.spyOn(console, 'info').mockImplementation(() => {
+  });
+  vi.spyOn(console, 'warn').mockImplementation(() => {
+  });
+  vi.spyOn(console, 'error').mockImplementation(() => {
+  });
 });
 
 afterEach(() => {
