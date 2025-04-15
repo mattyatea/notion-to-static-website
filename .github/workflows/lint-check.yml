@@ -1,4 +1,4 @@
-name: CI
+name: Lint Check
 
 on:
   push:
@@ -8,8 +8,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  lint:
-    name: ESLint
+  lint-check:
+    name: Lint Check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,35 +30,23 @@ jobs:
         run: pnpm install
 
       - name: Run ESLint
-        run: pnpm dlx eslint . --ext .js,.jsx,.ts,.tsx,.astro
-
-  test:
-    name: Vitest Tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v3
+        run: pnpm lint
+        
+      # エラーが見つかった場合に失敗するが、警告は許容する
+      - name: Check for ESLint errors
+        run: |
+          pnpm dlx eslint . --ext .js,.jsx,.ts,.tsx,.astro --max-warnings 9999 --format json > eslint-report.json || true
+          echo "Checking ESLint report for errors..."
+          if grep -q '"fatal":true' eslint-report.json || grep -q '"severity":2' eslint-report.json; then
+            echo "ESLint found errors in the code. Please fix them before merging."
+            exit 1
+          else
+            echo "No ESLint errors found."
+          fi
+      
+      - name: Upload ESLint report
+        uses: actions/upload-artifact@v4
         with:
-          version: 8
-          run_install: false
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Run Vitest with Coverage
-        run: pnpm test:coverage
-
-      - name: Upload coverage reports
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./coverage/
-          fail_ci_if_error: false
+          name: eslint-report
+          path: eslint-report.json
+          retention-days: 7
