@@ -1,0 +1,71 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getFormattedDatabase } from '../../lib/notion';
+import type { FormattedPage } from '../../lib/notion';
+
+// Notionデータベースからデータを取得
+let posts: FormattedPage[] = [];
+let error: string | null = null;
+
+try {
+  posts = await getFormattedDatabase();
+} catch (e) {
+  console.error('Error fetching Notion database:', e);
+  error = e instanceof Error ? e.message : '不明なエラー';
+}
+---
+
+<BaseLayout title="ブログ記事一覧">
+  <h1 class="text-3xl font-bold mb-8">ブログ記事一覧</h1>
+
+  {
+    error && (
+      <div class="bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded mb-6">
+        <p>
+          <strong>エラー:</strong> データの取得に失敗しました。
+        </p>
+        <p class="text-sm">{error}</p>
+      </div>
+    )
+  }
+
+  {
+    posts.length === 0 && !error ? (
+      <p class="text-gray-500 dark:text-gray-400">投稿が見つかりませんでした。</p>
+    ) : (
+      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {posts.map((post) => (
+          <Fragment key={post.id}>
+            <a
+              href={`/posts/${post.slug}`}
+              class="block border border-gray-200 dark:border-gray-700 rounded-lg p-6 hover:shadow-md dark:hover:shadow-gray-800 transition-shadow"
+            >
+              <h2 class="text-xl font-bold mb-2">{post.title || '無題'}</h2>
+
+              {post.summary && <p class="text-gray-600 dark:text-gray-400 mb-3">{post.summary}</p>}
+
+              {post.date && (
+                <p class="text-sm text-gray-500 dark:text-gray-500 mb-2">
+                  公開日: {new Date(post.date).toLocaleDateString('ja-JP')}
+                </p>
+              )}
+
+              {post.tags && post.tags.length > 0 && (
+                <div class="flex flex-wrap gap-2 mt-3">
+                  {post.tags.map((tag, index) => (
+                    <span
+                      key={`tag-${index}`}
+                      class="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 text-xs px-2 py-1 rounded"
+                    >
+                      {tag.name}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </a>
+          </Fragment>
+        ))}
+      </div>
+    )
+  }
+</BaseLayout>

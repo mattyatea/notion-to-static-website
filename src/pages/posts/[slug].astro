@@ -1,0 +1,98 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getFormattedDatabase, getPageBySlug } from '../../lib/notion';
+import { NotionBlocks } from '../../components/NotionBlock';
+import type { FormattedPage } from '../../lib/notion';
+
+// スラッグを取得
+const { slug } = Astro.params;
+
+// データを取得
+let page: FormattedPage | null = null;
+let error: string | null = null;
+
+try {
+  if (slug) {
+    page = await getPageBySlug(slug);
+
+    if (!page) {
+      error = `スラッグ "${slug}" のページが見つかりませんでした。`;
+    }
+  } else {
+    error = 'ページスラッグが指定されていません';
+  }
+} catch (e) {
+  console.error('Error fetching Notion page:', e);
+  error = e instanceof Error ? e.message : '不明なエラー';
+}
+
+// タイトルを取得
+const title = page?.title || '無題';
+const summary = page?.summary || 'summary';
+
+// 静的生成用のパスを生成する関数
+export async function getStaticPaths() {
+  let posts: FormattedPage[] = [];
+
+  try {
+    posts = await getFormattedDatabase();
+
+    return posts.map((post) => ({
+      params: { slug: post.slug },
+      props: { post },
+    }));
+  } catch (error) {
+    console.error('Error generating static paths:', error);
+    return []; // エラーが発生した場合は空の配列を返す
+  }
+}
+---
+
+<BaseLayout title={title} summary={summary}>
+  {
+    error ? (
+      <div class="bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded mb-6">
+        <p>
+          <strong>エラー:</strong> ページの取得に失敗しました。
+        </p>
+        <p class="text-sm">{error}</p>
+        <a href="/posts" class="inline-block mt-3 text-blue-500 dark:text-blue-400 hover:underline">
+          ← 一覧に戻る
+        </a>
+      </div>
+    ) : (
+      <>
+        <div class="mb-6">
+          <a href="/posts" class="text-blue-500 dark:text-blue-400 hover:underline">
+            ← 一覧に戻る
+          </a>
+        </div>
+
+        <article class="prose prose-lg dark:prose-invert max-w-3xl mx-auto">
+          <header class="mb-8">
+            <h1 class="text-3xl font-bold mb-3">{title}</h1>
+
+            <div class="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">
+              {page?.date && <div>公開日: {new Date(page?.date).toLocaleDateString('ja-JP')}</div>}
+            </div>
+
+            {page?.tags && page?.tags.length > 0 && (
+              <div class="flex flex-wrap gap-2 mt-4">
+                {page?.tags.map((tag, index) => (
+                  <span
+                    key={`tag-${index}`}
+                    class="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 text-xs px-2 py-1 rounded"
+                  >
+                    {tag.name}
+                  </span>
+                ))}
+              </div>
+            )}
+          </header>
+
+          <div class="notion-content">{page?.blocks && <NotionBlocks blocks={page?.blocks} />}</div>
+        </article>
+      </>
+    )
+  }
+</BaseLayout>

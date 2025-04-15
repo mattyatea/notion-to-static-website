@@ -1,0 +1,35 @@
+---
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="py-6 border-t border-gray-200 dark:border-gray-800">
+  <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+    <div>
+      <p>&copy; {currentYear} nanasi-apps.xyz All rights reserved.</p>
+    </div>
+    <div>
+      <ul class="flex space-x-4">
+        <li>
+          <a
+            href="https://github.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          >
+            GitHub
+          </a>
+        </li>
+        <li>
+          <a
+            href="https://twitter.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          >
+            Twitter
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,94 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PostCard from '@/components/PostCard.astro';
+import { getAllTags, getPagesByTag } from '../../lib/notion';
+
+export async function getStaticPaths() {
+  try {
+    const tags = await getAllTags();
+    return tags.map((tag) => ({
+      params: { tag: tag },
+      props: { tag },
+    }));
+  } catch (error) {
+    console.warn(`タグの取得に失敗しました:`, error);
+    return []; // エラー時は空の配列を返す
+  }
+}
+
+const { tag } = Astro.params;
+
+// 指定されたタグの記事を取得
+import type { FormattedPage } from '../../types/notion';
+
+let posts: FormattedPage[] = [];
+try {
+  posts = await getPagesByTag(tag);
+} catch (error) {
+  console.error(`タグ「${tag}」の記事取得に失敗しました:`, error);
+}
+---
+
+<BaseLayout title={`${tag} の記事一覧 | nanasi-apps.xyz`}>
+  <div class="max-w-4xl mx-auto">
+    <header class="mb-10">
+      <h1 class="text-3xl font-bold mb-2 flex items-center">
+        <span class="inline-block w-4 h-4 rounded-full bg-gray-500 mr-2"></span>
+        タグ: {tag}
+      </h1>
+      <p class="text-gray-600 dark:text-gray-400">
+        「{tag}」タグがついた記事の一覧です
+      </p>
+    </header>
+
+    {
+      posts.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {posts.map((post) => (
+            <Fragment key={post.id}>
+              <PostCard
+                title={post.title}
+                summary={post.summary}
+                publishDate={new Date(post.date || Date.now())}
+                url={`/posts/${post.slug}`}
+                tags={post.tags.map((tag) => tag.name)}
+                coverImage={post.thumbnail?.url}
+              />
+            </Fragment>
+          ))}
+        </div>
+      ) : (
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+          <div class="text-center py-12">
+            <h2 class="text-xl font-medium mb-2">記事が見つかりません</h2>
+            <p class="text-gray-600 dark:text-gray-400">
+              「{tag}」タグのついた記事はまだありません。
+            </p>
+          </div>
+        </div>
+      )
+    }
+
+    <div class="mt-10">
+      <a
+        href="/posts"
+        class="inline-flex items-center text-blue-600 dark:text-blue-400 hover:underline"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 mr-2"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
+        </svg>
+        すべての記事に戻る
+      </a>
+    </div>
+  </div>
+</BaseLayout>

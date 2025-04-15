@@ -1,0 +1,41 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+const { frontmatter } = Astro.props;
+const { title, summary, pubDate, tags } = frontmatter;
+---
+
+<BaseLayout title={title} summary={summary ?? '説明はありません'}>
+  <article class="prose prose-lg dark:prose-invert max-w-3xl mx-auto">
+    <header class="mb-8">
+      <h1 class="text-3xl font-bold mb-3">{title}</h1>
+
+      {
+        pubDate && (
+          <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+            公開日: {new Date(pubDate).toLocaleDateString('ja-JP')}
+          </div>
+        )
+      }
+
+      {
+        tags && tags.length > 0 && (
+          <div class="flex flex-wrap gap-2 mt-4">
+            {tags.map((tag: string, index: number) => (
+              <span
+                key={`tag-${index}`}
+                class="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 text-xs px-2 py-1 rounded"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )
+      }
+    </header>
+
+    <div class="mdx-content">
+      <slot />
+    </div>
+  </article>
+</BaseLayout>

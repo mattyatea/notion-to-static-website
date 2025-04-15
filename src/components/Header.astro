@@ -1,0 +1,33 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+---
+
+<header class="py-6">
+  <div class="flex justify-between items-center">
+    <div>
+      <a
+        href="/"
+        class="text-2xl font-bold hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+      >
+        nanasi-apps.xyz
+      </a>
+    </div>
+    <div class="flex items-center gap-6">
+      <nav>
+        <ul class="flex space-x-6">
+          <li>
+            <a href="/" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+              ホーム
+            </a>
+          </li>
+          <li>
+            <a href="/posts" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+              ブログ
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <ThemeToggle />
+    </div>
+  </div>
+</header>
