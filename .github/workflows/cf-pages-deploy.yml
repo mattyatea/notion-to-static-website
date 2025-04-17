@@ -1,0 +1,23 @@
+name: Cloudflare Pages Deploy
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron:  '0 */6 * * *'
+
+jobs: 
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Build
+        uses: withastro/action@v4
+      - name: Publish
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages publish --project-name=${{ secrets.CF_PROJECT_NAME }} --project-branch=main
+          workingDirectory: ./dist
