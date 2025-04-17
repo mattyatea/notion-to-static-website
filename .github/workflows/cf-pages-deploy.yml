@@ -19,6 +19,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages publish --project-name=${{ secrets.CF_PROJECT_NAME }}
+          command: pages deploy --project-name=${{ secrets.CF_PROJECT_NAME }}
           workingDirectory: ./dist
+          pages_build_output_dir: ./dist
           packageManager: pnpm
