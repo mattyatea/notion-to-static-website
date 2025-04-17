@@ -21,3 +21,4 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages publish --project-name=${{ secrets.CF_PROJECT_NAME }} --project-branch=main
           workingDirectory: ./dist
+          packageManager: pnpm
