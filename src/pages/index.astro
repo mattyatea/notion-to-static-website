@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '@/components/PostCard.astro';
 import { getFormattedDatabase } from '@/lib/notion';
 import type { FormattedPage } from '@/types/notion';
 
@@ -46,35 +47,14 @@ try {
         <div class="grid gap-6 md:grid-cols-2">
           {recentPosts.map((post) => (
             <Fragment key={post.id}>
-              <a
-                href={`/posts/${post.slug}`}
-                class="block border border-gray-200 dark:border-gray-700 rounded-lg p-6 hover:shadow-md dark:hover:shadow-gray-800 transition-shadow"
-              >
-                <h3 class="text-xl font-bold mb-2">{post.title || '無題'}</h3>
-
-                {post.summary && (
-                  <p class="text-gray-600 dark:text-gray-400 mb-3">{post.summary}</p>
-                )}
-
-                {post.date && (
-                  <p class="text-sm text-gray-500 dark:text-gray-500 mb-2">
-                    公開日: {new Date(post.date).toLocaleDateString('ja-JP')}
-                  </p>
-                )}
-
-                {post.tags && post.tags.length > 0 && (
-                  <div class="flex flex-wrap gap-2 mt-3">
-                    {post.tags.map((tag, index) => (
-                      <span
-                        key={`tag-${index}`}
-                        class="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 text-xs px-2 py-1 rounded"
-                      >
-                        {tag.name}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </a>
+              <PostCard
+                title={post.title}
+                summary={post.summary}
+                publishDate={new Date(post.date || Date.now())}
+                url={`/posts/${post.slug}`}
+                tags={post.tags.map((tag) => tag.name)}
+                coverImage={post.thumbnail?.url}
+              />
             </Fragment>
           ))}
         </div>
