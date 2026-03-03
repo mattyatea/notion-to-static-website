@@ -1,19 +1,19 @@
-import '@testing-library/jest-dom';
-import { vi } from 'vitest';
+import "@testing-library/jest-dom";
+import { vi } from "vitest";
 
 // 環境変数のモック
-vi.stubGlobal('process', {
+vi.stubGlobal("process", {
   ...process,
   env: {
     ...process.env,
-    NODE_ENV: 'test',
-    NOTION_API_KEY: 'test-api-key',
-    NOTION_DATABASE_ID: 'test-database-id',
+    NODE_ENV: "test",
+    NOTION_API_KEY: "test-api-key",
+    NOTION_DATABASE_ID: "test-database-id",
   },
 });
 
 // モックの基本設定
-vi.mock('@notionhq/client', () => {
+vi.mock("@notionhq/client", () => {
   const mockRetrieve = vi.fn();
   const mockRetrieveDatabase = vi.fn();
   const mockListBlocks = vi.fn();
@@ -39,14 +39,14 @@ vi.mock('@notionhq/client', () => {
 
   return {
     APIErrorCode: {
-      ObjectNotFound: 'object_not_found',
+      ObjectNotFound: "object_not_found",
     },
     isNotionClientError: (error: unknown) => {
-      if (typeof error !== 'object' || error === null) {
+      if (typeof error !== "object" || error === null) {
         return false;
       }
 
-      return 'code' in error;
+      return "code" in error;
     },
     Client: vi.fn(function Client() {
       return {
@@ -71,8 +71,8 @@ vi.mock('@notionhq/client', () => {
 });
 
 // React関連のモック
-vi.mock('react', async () => {
-  const actual = await vi.importActual('react');
+vi.mock("react", async () => {
+  const actual = await vi.importActual("react");
   return {
     ...actual,
     // 必要に応じて追加のReactメソッドをモック
@@ -81,11 +81,11 @@ vi.mock('react', async () => {
 
 // console関数のモック化（テスト出力を整理するため）
 beforeEach(() => {
-  vi.spyOn(console, 'log').mockImplementation(() => {});
-  vi.spyOn(console, 'debug').mockImplementation(() => {});
-  vi.spyOn(console, 'info').mockImplementation(() => {});
-  vi.spyOn(console, 'warn').mockImplementation(() => {});
-  vi.spyOn(console, 'error').mockImplementation(() => {});
+  vi.spyOn(console, "log").mockImplementation(() => {});
+  vi.spyOn(console, "debug").mockImplementation(() => {});
+  vi.spyOn(console, "info").mockImplementation(() => {});
+  vi.spyOn(console, "warn").mockImplementation(() => {});
+  vi.spyOn(console, "error").mockImplementation(() => {});
 });
 
 afterEach(() => {

@@ -2,9 +2,9 @@
  * 段落ブロックコンポーネント
  */
 
-import React, { memo } from 'react';
-import type { NotionBlockProps } from '@/types/notion';
-import { RichText } from './RichText';
+import React, { memo } from "react";
+import type { NotionBlockProps } from "@/types/notion";
+import { RichText } from "./RichText";
 
 /**
  * 段落ブロックをレンダリングするコンポーネント
@@ -17,4 +17,4 @@ export const ParagraphBlock = memo(({ block }: NotionBlockProps) => {
   );
 });
 
-ParagraphBlock.displayName = 'ParagraphBlock';
+ParagraphBlock.displayName = "ParagraphBlock";

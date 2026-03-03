@@ -2,10 +2,10 @@
  * リストブロックコンポーネント
  */
 
-import React, { memo } from 'react';
-import type { NotionBlockProps } from '@/types/notion';
-import { RichText } from './RichText';
-import NotionBlock from './index';
+import React, { memo } from "react";
+import type { NotionBlockProps } from "@/types/notion";
+import { RichText } from "./RichText";
+import NotionBlock from "./index";
 
 /**
  * 箇条書きリストアイテムをレンダリングするコンポーネント
@@ -25,7 +25,7 @@ export const BulletedListItemBlock = memo(({ block }: NotionBlockProps) => {
   );
 });
 
-BulletedListItemBlock.displayName = 'BulletedListItemBlock';
+BulletedListItemBlock.displayName = "BulletedListItemBlock";
 
 /**
  * 番号付きリストアイテムをレンダリングするコンポーネント
@@ -45,7 +45,7 @@ export const NumberedListItemBlock = memo(({ block }: NotionBlockProps) => {
   );
 });
 
-NumberedListItemBlock.displayName = 'NumberedListItemBlock';
+NumberedListItemBlock.displayName = "NumberedListItemBlock";
 
 /**
  * ToDoブロックをレンダリングするコンポーネント
@@ -68,4 +68,4 @@ export const ToDoBlock = memo(({ block }: NotionBlockProps) => {
   );
 });
 
-ToDoBlock.displayName = 'ToDoBlock';
+ToDoBlock.displayName = "ToDoBlock";

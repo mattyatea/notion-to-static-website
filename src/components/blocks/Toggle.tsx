@@ -2,10 +2,10 @@
  * トグルブロックコンポーネント
  */
 
-import React, { memo } from 'react';
-import type { NotionBlockProps } from '@/types/notion';
-import { RichText } from './RichText';
-import NotionBlock from './index';
+import React, { memo } from "react";
+import type { NotionBlockProps } from "@/types/notion";
+import { RichText } from "./RichText";
+import NotionBlock from "./index";
 
 /**
  * トグルブロックをレンダリングするコンポーネント
@@ -27,4 +27,4 @@ export const ToggleBlock = memo(({ block }: NotionBlockProps) => {
   );
 });
 
-ToggleBlock.displayName = 'ToggleBlock';
+ToggleBlock.displayName = "ToggleBlock";

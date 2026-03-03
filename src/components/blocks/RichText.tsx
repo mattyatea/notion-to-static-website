@@ -3,8 +3,8 @@
  * @file Notionのリッチテキストアイテムをスタイル付きでレンダリングします
  */
 
-import React, { memo } from 'react';
-import type { RichTextItem } from '@/types/notion';
+import React, { memo } from "react";
+import type { RichTextItem } from "@/types/notion";
 
 /**
  * リッチテキストのスタイル情報を計算する関数
@@ -12,13 +12,13 @@ import type { RichTextItem } from '@/types/notion';
  * @param type
  * @returns TailwindCSSクラス名
  */
-export function getStyleClasses(annotations: RichTextItem['annotations'], type: string): string {
+export function getStyleClasses(annotations: RichTextItem["annotations"], type: string): string {
   const classes: string[] = [];
 
   // 色の適用
-  if (annotations.color && annotations.color !== 'default') {
-    if (annotations.color.includes('_background')) {
-      const bgColor = annotations.color.replace('_background', '');
+  if (annotations.color && annotations.color !== "default") {
+    if (annotations.color.includes("_background")) {
+      const bgColor = annotations.color.replace("_background", "");
       classes.push(`bg-${bgColor}-100 text-${bgColor}-800 px-1 rounded`);
     } else {
       classes.push(`text-${annotations.color}-500`);
@@ -26,11 +26,11 @@ export function getStyleClasses(annotations: RichTextItem['annotations'], type: 
   }
 
   // codeブロックの場合のスタイル
-  if (type === 'code') {
-    classes.push('bg-gray-100 p-1 rounded font-mono text-sm');
+  if (type === "code") {
+    classes.push("bg-gray-100 p-1 rounded font-mono text-sm");
   }
 
-  return classes.join(' ');
+  return classes.join(" ");
 }
 
 /**
@@ -102,4 +102,4 @@ export const RichText = memo(({ richText }: { richText?: RichTextItem[] }) => {
   );
 });
 
-RichText.displayName = 'RichText';
+RichText.displayName = "RichText";

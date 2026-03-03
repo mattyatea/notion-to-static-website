@@ -16,7 +16,8 @@
 
 ### コードスタイル
 
-- [Prettier](https://prettier.io/)を使用してコードを整形します
+- [OXLint](https://oxc.rs/docs/guide/usage/linter)で静的チェックを行います
+- [OXFmt](https://oxc.rs/docs/guide/usage/formatter)でコードを整形します
 - 関数にはJSDocコメントを追加してください
 - TypeScriptの型定義を適切に使用してください
 - コンポーネントはReactの場合、可能な限り関数コンポーネントと`memo`を使用してください

@@ -3,6 +3,6 @@
   "compatibility_date": "2025-04-10",
   "pages_build_output_directory": "./dist",
   "assets": {
-    "directory": "./dist"
-  }
+    "directory": "./dist",
+  },
 }

@@ -4,10 +4,10 @@ import type {
   NotionBlockWithChildren,
   PageData,
   PageResponse,
-} from '@/types/notion';
-import { getFromCacheOrFetch } from './cache';
-import { log, NOTION_DATABASE_ID } from './client';
-import { queryNotionCollection } from './query';
+} from "@/types/notion";
+import { getFromCacheOrFetch } from "./cache";
+import { log, NOTION_DATABASE_ID } from "./client";
+import { queryNotionCollection } from "./query";
 
 /**
  * ページオブジェクトをフォーマット済みのページに変換する
@@ -17,11 +17,11 @@ import { queryNotionCollection } from './query';
  */
 export function formatPage(page: PageResponse, blocks?: NotionBlockWithChildren[]): FormattedPage {
   const properties = page.properties as PageData;
-  log('debug', `Formatting page: ${page.id}`, {
-    title: properties.title?.title[0]?.plain_text || '無題',
+  log("debug", `Formatting page: ${page.id}`, {
+    title: properties.title?.title[0]?.plain_text || "無題",
   });
 
-  let title = '無題';
+  let title = "無題";
   if (properties.title?.title?.[0]?.plain_text) {
     title = properties.title.title[0].plain_text;
   }
@@ -35,16 +35,16 @@ export function formatPage(page: PageResponse, blocks?: NotionBlockWithChildren[
   if (properties.thumbnail?.files?.[0]) {
     const thumb = properties.thumbnail.files[0];
     thumbnail = {
-      type: thumb.type || 'external',
-      url: thumb.file?.url || thumb.external?.url || '',
+      type: thumb.type || "external",
+      url: thumb.file?.url || thumb.external?.url || "",
     };
   } else if (page.cover) {
     thumbnail = {
       type: page.cover.type,
       url:
-        page.cover.type === 'external'
-          ? page.cover.external?.url || ''
-          : page.cover.file?.url || '',
+        page.cover.type === "external"
+          ? page.cover.external?.url || ""
+          : page.cover.file?.url || "",
     };
   }
 
@@ -68,10 +68,10 @@ export function formatPage(page: PageResponse, blocks?: NotionBlockWithChildren[
 
   const category = properties.category?.select?.name;
   const status = properties.status?.select?.name;
-  const summary = properties.summary?.rich_text?.[0]?.plain_text || '';
+  const summary = properties.summary?.rich_text?.[0]?.plain_text || "";
 
   const keywords = properties.keywords?.rich_text?.[0]?.plain_text
-    ? properties.keywords.rich_text[0].plain_text.split(',').map((k) => k.trim())
+    ? properties.keywords.rich_text[0].plain_text.split(",").map((k) => k.trim())
     : [];
 
   return {
@@ -97,7 +97,7 @@ export function formatPage(page: PageResponse, blocks?: NotionBlockWithChildren[
  * @returns フォーマット済みのページの配列
  */
 export function formatPages(pages: PageResponse[]): FormattedPage[] {
-  log('debug', `Formatting ${pages.length} pages`);
+  log("debug", `Formatting ${pages.length} pages`);
   return pages.map((page) => formatPage(page));
 }
 
@@ -110,18 +110,18 @@ export function formatPages(pages: PageResponse[]): FormattedPage[] {
  */
 export async function getFormattedDatabase(
   filterByStatus = true,
-  status = 'Public'
+  status = "Public",
 ): Promise<FormattedPage[]> {
   if (!NOTION_DATABASE_ID) {
-    const error = new Error('NOTION_DATABASE_IDが設定されていません');
-    log('error', error.message);
+    const error = new Error("NOTION_DATABASE_IDが設定されていません");
+    log("error", error.message);
     throw error;
   }
   const databaseId = NOTION_DATABASE_ID;
 
   log(
-    'info',
-    `Getting formatted database (filter by status: ${filterByStatus}, status: ${status})`
+    "info",
+    `Getting formatted database (filter by status: ${filterByStatus}, status: ${status})`,
   );
 
   return getFromCacheOrFetch(`formatted-database:${filterByStatus}:${status}`, async () => {
@@ -129,7 +129,7 @@ export async function getFormattedDatabase(
       interface QueryOptions {
         sorts: {
           property: string;
-          direction: 'ascending' | 'descending';
+          direction: "ascending" | "descending";
         }[];
         filter?: {
           property: string;
@@ -141,12 +141,12 @@ export async function getFormattedDatabase(
       }
 
       const queryOptions: QueryOptions = {
-        sorts: [{ property: 'date', direction: 'descending' }],
+        sorts: [{ property: "date", direction: "descending" }],
       };
 
       if (filterByStatus) {
         queryOptions.filter = {
-          property: 'status',
+          property: "status",
           select: { equals: status },
         };
       }
@@ -166,18 +166,18 @@ export async function getFormattedDatabase(
         cursor = response.next_cursor || undefined;
       }
 
-      log('debug', `Found ${allPages.length} pages in database`);
+      log("debug", `Found ${allPages.length} pages in database`);
 
       return formatPages(allPages);
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : '不明なエラー';
-      log('error', 'Failed to format database:', error);
+      const errorMsg = error instanceof Error ? error.message : "不明なエラー";
+      log("error", "Failed to format database:", error);
 
       let detailedMessage = `データベースの取得・整形に失敗しました: ${errorMsg}`;
 
-      if (errorMsg.includes('404')) {
+      if (errorMsg.includes("404")) {
         detailedMessage = `データベースが見つかりません (ID: ${NOTION_DATABASE_ID})`;
-      } else if (errorMsg.includes('401') || errorMsg.includes('403')) {
+      } else if (errorMsg.includes("401") || errorMsg.includes("403")) {
         detailedMessage = `データベースへのアクセス権限がありません (ID: ${NOTION_DATABASE_ID})`;
       }
 

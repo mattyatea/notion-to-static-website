@@ -688,11 +688,11 @@ Max Concurrent: 4 (Wave 1, Wave 3)
   **What to do**:
   - `src/lib/notion/index.ts` を作成し、全モジュールからの public API を re-export:
     ```ts
-    export { notion } from './client';
-    export { getFromCacheOrFetch } from './cache';
-    export { getFormattedDatabase } from './database';
-    export { getPageBySlug, getBlocks } from './page';
-    export { getAllTags, getPagesByTag } from './tags';
+    export { notion } from "./client";
+    export { getFromCacheOrFetch } from "./cache";
+    export { getFormattedDatabase } from "./database";
+    export { getPageBySlug, getBlocks } from "./page";
+    export { getAllTags, getPagesByTag } from "./tags";
     ```
   - 旧 `src/lib/notion.ts` を削除
   - 全ページファイルの import パスを更新:

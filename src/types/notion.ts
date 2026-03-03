@@ -114,7 +114,7 @@ export interface NotionBlockWithChildren {
   };
 
   image?: {
-    type: 'external' | 'file';
+    type: "external" | "file";
     external?: {
       url: string;
     };
@@ -162,7 +162,7 @@ export interface NotionBlockWithChildren {
   };
 
   video?: {
-    type: 'external' | 'file';
+    type: "external" | "file";
     external?: {
       url: string;
     };
@@ -196,7 +196,7 @@ export interface NotionBlockWithChildren {
   };
 
   link_to_page?: {
-    type: 'page_id' | 'database_id';
+    type: "page_id" | "database_id";
     page_id?: string;
     database_id?: string;
   };
@@ -283,7 +283,7 @@ export interface PageResponse {
 
   /** カバー画像 */
   cover?: {
-    type: 'external' | 'file';
+    type: "external" | "file";
     external?: { url: string };
     file?: { url: string; expiry_time: string };
   };
@@ -298,7 +298,7 @@ export interface PageResponse {
 
   /** 親ページ情報 */
   parent?: {
-    type: 'database_id' | 'page_id' | 'workspace';
+    type: "database_id" | "page_id" | "workspace";
     database_id?: string;
     page_id?: string;
   };
@@ -311,14 +311,14 @@ export interface PageData {
   /** キーワード */
   keywords?: {
     id: string;
-    type: 'rich_text';
+    type: "rich_text";
     rich_text: RichTextItem[];
   };
 
   /** 公開日 */
   date?: {
     id: string;
-    type: 'date';
+    type: "date";
     date: {
       start: string;
       end: string | null;
@@ -329,10 +329,10 @@ export interface PageData {
   /** サムネイル画像 */
   thumbnail?: {
     id: string;
-    type: 'files';
+    type: "files";
     files: Array<{
       name?: string;
-      type?: 'file' | 'external';
+      type?: "file" | "external";
       file?: { url: string; expiry_time?: string };
       external?: { url: string };
     }>;
@@ -341,7 +341,7 @@ export interface PageData {
   /** コンテンツタイプ */
   type?: {
     id: string;
-    type: 'select';
+    type: "select";
     select: {
       id: string;
       name: string;
@@ -352,14 +352,14 @@ export interface PageData {
   /** スラッグ (URL用) */
   slug?: {
     id: string;
-    type: 'rich_text';
+    type: "rich_text";
     rich_text: RichTextItem[];
   };
 
   /** カテゴリ */
   category?: {
     id: string;
-    type: 'select';
+    type: "select";
     select: {
       id: string;
       name: string;
@@ -370,7 +370,7 @@ export interface PageData {
   /** タグ */
   tags?: {
     id: string;
-    type: 'multi_select';
+    type: "multi_select";
     multi_select: Array<{
       id: string;
       name: string;
@@ -381,21 +381,21 @@ export interface PageData {
   /** 概要 */
   summary?: {
     id: string;
-    type: 'rich_text';
+    type: "rich_text";
     rich_text: RichTextItem[];
   };
 
   /** 更新日時 */
   updatedAt?: {
     id: string;
-    type: 'last_edited_time';
+    type: "last_edited_time";
     last_edited_time: string;
   };
 
   /** 著者 */
   author?: {
     id: string;
-    type: 'people';
+    type: "people";
     people: Array<{
       object: string;
       id: string;
@@ -408,14 +408,14 @@ export interface PageData {
   /** タイトル */
   title?: {
     id: string;
-    type: 'title';
+    type: "title";
     title: RichTextItem[];
   };
 
   /** 公開状態 */
   status?: {
     id: string;
-    type: 'select';
+    type: "select";
     select: {
       id: string;
       name: string;
@@ -432,7 +432,7 @@ export interface PageData {
  */
 export interface DatabaseQueryResponse {
   /** 結果オブジェクト */
-  object: 'list';
+  object: "list";
 
   /** 結果ページの配列 */
   results: PageResponse[];
@@ -446,18 +446,18 @@ export interface DatabaseQueryResponse {
 
 export function isPageResponse(response: unknown): response is PageResponse {
   return (
-    typeof response === 'object' &&
+    typeof response === "object" &&
     response !== null &&
-    'id' in response &&
-    typeof response.id === 'string' &&
-    'properties' in response &&
-    typeof response.properties === 'object' &&
+    "id" in response &&
+    typeof response.id === "string" &&
+    "properties" in response &&
+    typeof response.properties === "object" &&
     response.properties !== null
   );
 }
 
 export function isDatabaseQueryResponse(value: unknown): value is DatabaseQueryResponse {
-  if (typeof value !== 'object' || value === null) {
+  if (typeof value !== "object" || value === null) {
     return false;
   }
 
@@ -469,10 +469,10 @@ export function isDatabaseQueryResponse(value: unknown): value is DatabaseQueryR
   };
 
   return (
-    response.object === 'list' &&
+    response.object === "list" &&
     Array.isArray(response.results) &&
-    (typeof response.next_cursor === 'string' || response.next_cursor === null) &&
-    typeof response.has_more === 'boolean'
+    (typeof response.next_cursor === "string" || response.next_cursor === null) &&
+    typeof response.has_more === "boolean"
   );
 }
 

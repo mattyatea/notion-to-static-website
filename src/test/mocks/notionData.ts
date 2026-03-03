@@ -6,124 +6,124 @@ import type {
   FormattedPage,
   NotionBlockWithChildren,
   PageResponse,
-} from '@/types/notion.ts';
+} from "@/types/notion.ts";
 
 /**
  * Notion APIからのページレスポンスのモック
  */
 export const mockPageResponse: PageResponse = {
-  id: 'page-id-123',
+  id: "page-id-123",
   properties: {
     title: {
-      id: 'title-id',
-      type: 'title',
+      id: "title-id",
+      type: "title",
       title: [
         {
-          type: 'text',
+          type: "text",
           annotations: {
             bold: false,
             italic: false,
             strikethrough: false,
             underline: false,
             code: false,
-            color: 'default',
+            color: "default",
           },
-          plain_text: 'テストページ',
+          plain_text: "テストページ",
           href: null,
           text: {
-            content: 'テストページ',
+            content: "テストページ",
             link: null,
           },
         },
       ],
     },
     slug: {
-      id: 'slug-id',
-      type: 'rich_text',
+      id: "slug-id",
+      type: "rich_text",
       rich_text: [
         {
-          type: 'text',
+          type: "text",
           annotations: {
             bold: false,
             italic: false,
             strikethrough: false,
             underline: false,
             code: false,
-            color: 'default',
+            color: "default",
           },
-          plain_text: 'test-page',
+          plain_text: "test-page",
           href: null,
           text: {
-            content: 'test-page',
+            content: "test-page",
             link: null,
           },
         },
       ],
     },
     date: {
-      id: 'date-id',
-      type: 'date',
+      id: "date-id",
+      type: "date",
       date: {
-        start: '2024-01-01',
+        start: "2024-01-01",
         end: null,
         time_zone: null,
       },
     },
     tags: {
-      id: 'tags-id',
-      type: 'multi_select',
+      id: "tags-id",
+      type: "multi_select",
       multi_select: [
         {
-          id: 'tag-1',
-          name: 'テスト',
-          color: 'blue',
+          id: "tag-1",
+          name: "テスト",
+          color: "blue",
         },
         {
-          id: 'tag-2',
-          name: 'サンプル',
-          color: 'green',
+          id: "tag-2",
+          name: "サンプル",
+          color: "green",
         },
       ],
     },
     status: {
-      id: 'status-id',
-      type: 'select',
+      id: "status-id",
+      type: "select",
       select: {
-        id: 'status-1',
-        name: 'Public',
-        color: 'green',
+        id: "status-1",
+        name: "Public",
+        color: "green",
       },
     },
     summary: {
-      id: 'summary-id',
-      type: 'rich_text',
+      id: "summary-id",
+      type: "rich_text",
       rich_text: [
         {
-          type: 'text',
+          type: "text",
           annotations: {
             bold: false,
             italic: false,
             strikethrough: false,
             underline: false,
             code: false,
-            color: 'default',
+            color: "default",
           },
-          plain_text: 'これはテストページの概要です。',
+          plain_text: "これはテストページの概要です。",
           href: null,
           text: {
-            content: 'これはテストページの概要です。',
+            content: "これはテストページの概要です。",
             link: null,
           },
         },
       ],
     },
   },
-  created_time: '2024-01-01T00:00:00.000Z',
-  last_edited_time: '2024-01-02T00:00:00.000Z',
+  created_time: "2024-01-01T00:00:00.000Z",
+  last_edited_time: "2024-01-02T00:00:00.000Z",
   cover: {
-    type: 'external',
+    type: "external",
     external: {
-      url: 'https://example.com/cover.jpg',
+      url: "https://example.com/cover.jpg",
     },
   },
 };
@@ -133,25 +133,25 @@ export const mockPageResponse: PageResponse = {
  */
 export const mockBlocks: NotionBlockWithChildren[] = [
   {
-    id: 'block-1',
-    type: 'paragraph',
+    id: "block-1",
+    type: "paragraph",
     has_children: false,
     paragraph: {
       rich_text: [
         {
-          type: 'text',
+          type: "text",
           annotations: {
             bold: false,
             italic: false,
             strikethrough: false,
             underline: false,
             code: false,
-            color: 'default',
+            color: "default",
           },
-          plain_text: 'これはテスト段落です。',
+          plain_text: "これはテスト段落です。",
           href: null,
           text: {
-            content: 'これはテスト段落です。',
+            content: "これはテスト段落です。",
             link: null,
           },
         },
@@ -159,25 +159,25 @@ export const mockBlocks: NotionBlockWithChildren[] = [
     },
   },
   {
-    id: 'block-2',
-    type: 'heading_1',
+    id: "block-2",
+    type: "heading_1",
     has_children: false,
     heading_1: {
       rich_text: [
         {
-          type: 'text',
+          type: "text",
           annotations: {
             bold: false,
             italic: false,
             strikethrough: false,
             underline: false,
             code: false,
-            color: 'default',
+            color: "default",
           },
-          plain_text: 'テスト見出し',
+          plain_text: "テスト見出し",
           href: null,
           text: {
-            content: 'テスト見出し',
+            content: "テスト見出し",
             link: null,
           },
         },
@@ -185,25 +185,25 @@ export const mockBlocks: NotionBlockWithChildren[] = [
     },
   },
   {
-    id: 'block-3',
-    type: 'bulleted_list_item',
+    id: "block-3",
+    type: "bulleted_list_item",
     has_children: false,
     bulleted_list_item: {
       rich_text: [
         {
-          type: 'text',
+          type: "text",
           annotations: {
             bold: false,
             italic: false,
             strikethrough: false,
             underline: false,
             code: false,
-            color: 'default',
+            color: "default",
           },
-          plain_text: 'リストアイテム1',
+          plain_text: "リストアイテム1",
           href: null,
           text: {
-            content: 'リストアイテム1',
+            content: "リストアイテム1",
             link: null,
           },
         },
@@ -211,25 +211,25 @@ export const mockBlocks: NotionBlockWithChildren[] = [
     },
   },
   {
-    id: 'block-4',
-    type: 'bulleted_list_item',
+    id: "block-4",
+    type: "bulleted_list_item",
     has_children: false,
     bulleted_list_item: {
       rich_text: [
         {
-          type: 'text',
+          type: "text",
           annotations: {
             bold: false,
             italic: false,
             strikethrough: false,
             underline: false,
             code: false,
-            color: 'default',
+            color: "default",
           },
-          plain_text: 'リストアイテム2',
+          plain_text: "リストアイテム2",
           href: null,
           text: {
-            content: 'リストアイテム2',
+            content: "リストアイテム2",
             link: null,
           },
         },
@@ -237,20 +237,20 @@ export const mockBlocks: NotionBlockWithChildren[] = [
     },
   },
   {
-    id: 'block-5',
-    type: 'code',
+    id: "block-5",
+    type: "code",
     has_children: false,
     code: {
       rich_text: [
         {
-          type: 'text',
+          type: "text",
           annotations: {
             bold: false,
             italic: false,
             strikethrough: false,
             underline: false,
             code: false,
-            color: 'default',
+            color: "default",
           },
           plain_text: 'console.log("Hello, World!");',
           href: null,
@@ -260,7 +260,7 @@ export const mockBlocks: NotionBlockWithChildren[] = [
           },
         },
       ],
-      language: 'javascript',
+      language: "javascript",
     },
   },
 ];
@@ -271,25 +271,25 @@ export const mockBlocks: NotionBlockWithChildren[] = [
 export const mockBlocksWithChildren: NotionBlockWithChildren[] = [
   ...mockBlocks,
   {
-    id: 'block-parent',
-    type: 'toggle',
+    id: "block-parent",
+    type: "toggle",
     has_children: true,
     toggle: {
       rich_text: [
         {
-          type: 'text',
+          type: "text",
           annotations: {
             bold: false,
             italic: false,
             strikethrough: false,
             underline: false,
             code: false,
-            color: 'default',
+            color: "default",
           },
-          plain_text: 'トグルブロック',
+          plain_text: "トグルブロック",
           href: null,
           text: {
-            content: 'トグルブロック',
+            content: "トグルブロック",
             link: null,
           },
         },
@@ -297,25 +297,25 @@ export const mockBlocksWithChildren: NotionBlockWithChildren[] = [
     },
     children: [
       {
-        id: 'block-child-1',
-        type: 'paragraph',
+        id: "block-child-1",
+        type: "paragraph",
         has_children: false,
         paragraph: {
           rich_text: [
             {
-              type: 'text',
+              type: "text",
               annotations: {
                 bold: false,
                 italic: false,
                 strikethrough: false,
                 underline: false,
                 code: false,
-                color: 'default',
+                color: "default",
               },
-              plain_text: 'これは子ブロックです。',
+              plain_text: "これは子ブロックです。",
               href: null,
               text: {
-                content: 'これは子ブロックです。',
+                content: "これは子ブロックです。",
                 link: null,
               },
             },
@@ -330,7 +330,7 @@ export const mockBlocksWithChildren: NotionBlockWithChildren[] = [
  * データベースクエリレスポンスのモック
  */
 export const mockDatabaseQueryResponse: DatabaseQueryResponse = {
-  object: 'list',
+  object: "list",
   results: [mockPageResponse],
   next_cursor: null,
   has_more: false,
@@ -340,73 +340,73 @@ export const mockDatabaseQueryResponse: DatabaseQueryResponse = {
  * 複数ページのデータベースクエリレスポンスのモック
  */
 export const mockMultiPageResponse: DatabaseQueryResponse = {
-  object: 'list',
+  object: "list",
   results: [
     mockPageResponse,
     {
       ...mockPageResponse,
-      id: 'page-id-456',
+      id: "page-id-456",
       properties: {
         ...mockPageResponse.properties,
         title: {
-          id: 'title-id',
-          type: 'title',
+          id: "title-id",
+          type: "title",
           title: [
             {
-              type: 'text',
+              type: "text",
               annotations: {
                 bold: false,
                 italic: false,
                 strikethrough: false,
                 underline: false,
                 code: false,
-                color: 'default',
+                color: "default",
               },
-              plain_text: '別のテストページ',
+              plain_text: "別のテストページ",
               href: null,
               text: {
-                content: '別のテストページ',
+                content: "別のテストページ",
                 link: null,
               },
             },
           ],
         },
         slug: {
-          id: 'slug-id',
-          type: 'rich_text',
+          id: "slug-id",
+          type: "rich_text",
           rich_text: [
             {
-              type: 'text',
+              type: "text",
               annotations: {
                 bold: false,
                 italic: false,
                 strikethrough: false,
                 underline: false,
                 code: false,
-                color: 'default',
+                color: "default",
               },
-              plain_text: 'another-test-page',
+              plain_text: "another-test-page",
               href: null,
               text: {
-                content: 'another-test-page',
+                content: "another-test-page",
                 link: null,
               },
             },
           ],
         },
         tags: {
-          id: 'tags-id',
-          type: 'multi_select',
+          id: "tags-id",
+          type: "multi_select",
           multi_select: [
             {
-              id: 'tag-1',
-              name: 'テスト',
-              color: 'blue',
+              id: "tag-1",
+              name: "テスト",
+              color: "blue",
             },
             {
-              id: 'tag-3',
-              name: '例',
-              color: 'red',
+              id: "tag-3",
+              name: "例",
+              color: "red",
             },
           ],
         },
@@ -421,20 +421,20 @@ export const mockMultiPageResponse: DatabaseQueryResponse = {
  * フォーマット済みページデータのモック
  */
 export const mockFormattedPage: FormattedPage = {
-  id: 'page-id-123',
-  title: 'テストページ',
-  summary: 'これはテストページの概要です。',
-  slug: 'test-page',
+  id: "page-id-123",
+  title: "テストページ",
+  summary: "これはテストページの概要です。",
+  slug: "test-page",
   tags: [
-    { name: 'テスト', color: 'blue' },
-    { name: 'サンプル', color: 'green' },
+    { name: "テスト", color: "blue" },
+    { name: "サンプル", color: "green" },
   ],
   blocks: mockBlocks,
-  date: '2024-01-01T00:00:00.000Z',
-  updatedAt: '2024-01-02T00:00:00.000Z',
-  status: 'Public',
+  date: "2024-01-01T00:00:00.000Z",
+  updatedAt: "2024-01-02T00:00:00.000Z",
+  status: "Public",
   thumbnail: {
-    type: 'external',
-    url: 'https://example.com/cover.jpg',
+    type: "external",
+    url: "https://example.com/cover.jpg",
   },
 };

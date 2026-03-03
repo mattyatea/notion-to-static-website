@@ -2,9 +2,9 @@
  * カラムブロックコンポーネント
  */
 
-import React, { memo } from 'react';
-import type { NotionBlockProps } from '@/types/notion';
-import NotionBlock from './index';
+import React, { memo } from "react";
+import type { NotionBlockProps } from "@/types/notion";
+import NotionBlock from "./index";
 
 /**
  * カラムリストをレンダリングするコンポーネント
@@ -25,4 +25,4 @@ export const ColumnListBlock = memo(({ block }: NotionBlockProps) => {
   );
 });
 
-ColumnListBlock.displayName = 'ColumnListBlock';
+ColumnListBlock.displayName = "ColumnListBlock";

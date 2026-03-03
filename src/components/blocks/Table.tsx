@@ -2,9 +2,9 @@
  * テーブルブロックコンポーネント
  */
 
-import React, { memo } from 'react';
-import type { NotionBlockProps, RichTextItem } from '@/types/notion';
-import { RichText } from './RichText';
+import React, { memo } from "react";
+import type { NotionBlockProps, RichTextItem } from "@/types/notion";
+import { RichText } from "./RichText";
 
 /**
  * テーブルブロックをレンダリングするコンポーネント
@@ -23,15 +23,15 @@ export const TableBlock = memo(({ block }: NotionBlockProps) => {
       <table className="w-full border-collapse">
         <tbody>
           {block.children.map((row, i) => {
-            if (row.type !== 'table_row') return null;
+            if (row.type !== "table_row") return null;
 
             return (
               <tr
                 key={row.id}
-                className={i === 0 && block.table?.has_column_header ? 'bg-gray-100' : ''}
+                className={i === 0 && block.table?.has_column_header ? "bg-gray-100" : ""}
               >
                 {row.table_row?.cells?.map((cell, j) => {
-                  const Tag = i === 0 && block.table?.has_column_header ? 'th' : 'td';
+                  const Tag = i === 0 && block.table?.has_column_header ? "th" : "td";
 
                   return (
                     <Tag key={`${row.id}-${j}`} className="border border-gray-300 px-3 py-2">
@@ -48,4 +48,4 @@ export const TableBlock = memo(({ block }: NotionBlockProps) => {
   );
 });
 
-TableBlock.displayName = 'TableBlock';
+TableBlock.displayName = "TableBlock";

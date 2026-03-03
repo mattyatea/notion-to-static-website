@@ -3,8 +3,8 @@
  * @file Provides in-memory caching with TTL and stale-while-revalidate support
  */
 
-import type { CacheConfig } from '@/types/notion';
-import { log } from './client';
+import type { CacheConfig } from "@/types/notion";
+import { log } from "./client";
 
 const DEFAULT_CACHE_CONFIG: CacheConfig = {
   ttl: 5 * 60 * 1000, // 5 minutes
@@ -29,7 +29,7 @@ const cache: Record<string, CacheItem<unknown>> = {};
 export async function getFromCacheOrFetch<T>(
   key: string,
   fetchFn: () => Promise<T>,
-  config: CacheConfig = DEFAULT_CACHE_CONFIG
+  config: CacheConfig = DEFAULT_CACHE_CONFIG,
 ): Promise<T> {
   const now = Date.now();
   const cachedItem = cache[key];
@@ -37,7 +37,7 @@ export async function getFromCacheOrFetch<T>(
   if (cachedItem) {
     if (now < cachedItem.expiresAt) {
       if (now > cachedItem.timestamp + config.ttl * (config.refreshThreshold || 0.8)) {
-        log('debug', `Refreshing cache in background: ${key}`);
+        log("debug", `Refreshing cache in background: ${key}`);
         fetchFn()
           .then((data) => {
             cache[key] = {
@@ -45,10 +45,10 @@ export async function getFromCacheOrFetch<T>(
               timestamp: Date.now(),
               expiresAt: Date.now() + config.ttl,
             };
-            log('debug', `Cache refreshed in background: ${key}`);
+            log("debug", `Cache refreshed in background: ${key}`);
           })
           .catch((err) => {
-            log('warn', `Failed to refresh cache in background: ${key}`, err);
+            log("warn", `Failed to refresh cache in background: ${key}`, err);
           });
       }
       return cachedItem.data as T;
@@ -56,7 +56,7 @@ export async function getFromCacheOrFetch<T>(
   }
 
   try {
-    log('debug', `Fetching fresh data for: ${key}`);
+    log("debug", `Fetching fresh data for: ${key}`);
     const data = await fetchFn();
 
     cache[key] = {
@@ -67,10 +67,10 @@ export async function getFromCacheOrFetch<T>(
 
     return data;
   } catch (error) {
-    log('error', `Failed to fetch data for: ${key}`, error);
+    log("error", `Failed to fetch data for: ${key}`, error);
 
     if (cachedItem) {
-      log('warn', `Using expired cache as fallback for: ${key}`);
+      log("warn", `Using expired cache as fallback for: ${key}`);
       return cachedItem.data as T;
     }
 
@@ -89,11 +89,11 @@ export function clearCache(keyPrefix?: string): void {
         delete cache[key];
       }
     });
-    log('info', `Cleared cache with prefix: ${keyPrefix}`);
+    log("info", `Cleared cache with prefix: ${keyPrefix}`);
   } else {
     Object.keys(cache).forEach((key) => {
       delete cache[key];
     });
-    log('info', 'Cleared all cache');
+    log("info", "Cleared all cache");
   }
 }

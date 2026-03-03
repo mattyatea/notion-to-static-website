@@ -2,9 +2,9 @@
  * 見出しブロックコンポーネント
  */
 
-import React, { memo } from 'react';
-import type { NotionBlockProps } from '@/types/notion';
-import { RichText } from './RichText';
+import React, { memo } from "react";
+import type { NotionBlockProps } from "@/types/notion";
+import { RichText } from "./RichText";
 
 /**
  * 見出し1ブロックをレンダリングするコンポーネント
@@ -17,7 +17,7 @@ export const Heading1Block = memo(({ block }: NotionBlockProps) => {
   );
 });
 
-Heading1Block.displayName = 'Heading1Block';
+Heading1Block.displayName = "Heading1Block";
 
 /**
  * 見出し2ブロックをレンダリングするコンポーネント
@@ -30,7 +30,7 @@ export const Heading2Block = memo(({ block }: NotionBlockProps) => {
   );
 });
 
-Heading2Block.displayName = 'Heading2Block';
+Heading2Block.displayName = "Heading2Block";
 
 /**
  * 見出し3ブロックをレンダリングするコンポーネント
@@ -43,4 +43,4 @@ export const Heading3Block = memo(({ block }: NotionBlockProps) => {
   );
 });
 
-Heading3Block.displayName = 'Heading3Block';
+Heading3Block.displayName = "Heading3Block";

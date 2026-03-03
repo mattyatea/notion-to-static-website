@@ -4,5 +4,5 @@
  * レンダリングするためのコンポーネントを提供します。
  */
 
-export * from './blocks';
-export { default } from './blocks';
+export * from "./blocks";
+export { default } from "./blocks";

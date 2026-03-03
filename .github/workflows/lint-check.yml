@@ -8,7 +8,7 @@ on:
 
 jobs:
   lint:
-    name: ESLint & Prettier Check
+    name: OXLint & OXFmt Check
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -17,7 +17,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
@@ -42,8 +42,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Run ESLint
+      - name: Run OXLint
         run: pnpm lint
 
-      - name: Check formatting with Prettier
+      - name: Run OXFmt check
         run: pnpm format:check

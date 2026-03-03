@@ -1,9 +1,9 @@
-import { APIErrorCode, isNotionClientError } from '@notionhq/client';
-import type { DatabaseQueryResponse } from '@/types/notion';
-import { isDatabaseQueryResponse } from '@/types/notion';
-import { log, notion } from './client';
+import { APIErrorCode, isNotionClientError } from "@notionhq/client";
+import type { DatabaseQueryResponse } from "@/types/notion";
+import { isDatabaseQueryResponse } from "@/types/notion";
+import { log, notion } from "./client";
 
-type DataSourceQueryArgs = Omit<Parameters<typeof notion.dataSources.query>[0], 'data_source_id'>;
+type DataSourceQueryArgs = Omit<Parameters<typeof notion.dataSources.query>[0], "data_source_id">;
 const dataSourceIdCache = new Map<string, string>();
 
 export function clearDataSourceIdCache(): void {
@@ -17,8 +17,8 @@ function shouldFallbackToLegacyDatabaseQuery(error: unknown): boolean {
 
   if (error instanceof Error) {
     return (
-      error.message.includes('Could not find database with ID') ||
-      error.message.includes('Could not find data source with ID')
+      error.message.includes("Could not find database with ID") ||
+      error.message.includes("Could not find data source with ID")
     );
   }
 
@@ -27,7 +27,7 @@ function shouldFallbackToLegacyDatabaseQuery(error: unknown): boolean {
 
 async function resolveDataSourceId(
   dataSourceOrDatabaseId: string,
-  forceRefresh = false
+  forceRefresh = false,
 ): Promise<string> {
   const cachedDataSourceId = dataSourceIdCache.get(dataSourceOrDatabaseId);
   if (!forceRefresh && cachedDataSourceId) {
@@ -40,9 +40,9 @@ async function resolveDataSourceId(
     });
 
     if (
-      typeof database === 'object' &&
+      typeof database === "object" &&
       database !== null &&
-      'data_sources' in database &&
+      "data_sources" in database &&
       Array.isArray(database.data_sources)
     ) {
       const resolvedDataSourceId = database.data_sources[0]?.id;
@@ -64,7 +64,7 @@ async function resolveDataSourceId(
 
 export async function queryNotionCollection(
   dataSourceOrDatabaseId: string,
-  args: DataSourceQueryArgs
+  args: DataSourceQueryArgs,
 ): Promise<DatabaseQueryResponse> {
   const resolvedDataSourceId = await resolveDataSourceId(dataSourceOrDatabaseId);
 
@@ -75,7 +75,7 @@ export async function queryNotionCollection(
     });
 
     if (!isDatabaseQueryResponse(response)) {
-      throw new Error('Notion APIから期待するデータベース形式を取得できませんでした');
+      throw new Error("Notion APIから期待するデータベース形式を取得できませんでした");
     }
 
     return response;
@@ -88,7 +88,7 @@ export async function queryNotionCollection(
       throw error;
     }
 
-    log('warn', `Retrying with resolved data source for ${dataSourceOrDatabaseId}.`);
+    log("warn", `Retrying with resolved data source for ${dataSourceOrDatabaseId}.`);
 
     const retriedDataSourceId = await resolveDataSourceId(dataSourceOrDatabaseId, true);
     if (retriedDataSourceId === dataSourceOrDatabaseId) {
@@ -101,7 +101,7 @@ export async function queryNotionCollection(
     });
 
     if (!isDatabaseQueryResponse(fallbackResponse)) {
-      throw new Error('Notion APIから期待するデータベース形式を取得できませんでした');
+      throw new Error("Notion APIから期待するデータベース形式を取得できませんでした");
     }
 
     return fallbackResponse;

@@ -2,22 +2,22 @@
  * メディアブロックコンポーネント (画像、動画、埋め込み、ブックマーク)
  */
 
-import React, { memo } from 'react';
-import type { NotionBlockProps } from '@/types/notion';
-import type { RichTextItem } from '@/types/notion';
-import { RichText } from './RichText';
+import React, { memo } from "react";
+import type { NotionBlockProps } from "@/types/notion";
+import type { RichTextItem } from "@/types/notion";
+import { RichText } from "./RichText";
 
 /**
  * 画像ブロックをレンダリングするコンポーネント
  */
 export const ImageBlock = memo(({ block }: NotionBlockProps) => {
   const imageUrl =
-    block.image?.type === 'external' ? block.image.external?.url : block.image?.file?.url;
+    block.image?.type === "external" ? block.image.external?.url : block.image?.file?.url;
 
   const altText =
     block.image?.caption && block.image.caption.length > 0
-      ? block.image.caption.map((item) => item.plain_text).join(' ')
-      : 'Notion image';
+      ? block.image.caption.map((item) => item.plain_text).join(" ")
+      : "Notion image";
 
   if (!imageUrl) {
     return (
@@ -32,7 +32,7 @@ export const ImageBlock = memo(({ block }: NotionBlockProps) => {
       <img
         src={imageUrl}
         alt={altText}
-        className="mx-auto max-w-full rounded shadow-md"
+        className="mx-auto max-w-full rounded shadow-md transition-transform duration-200 hover:scale-105"
         loading="lazy"
       />
       {block.image?.caption && block.image.caption.length > 0 && (
@@ -44,14 +44,14 @@ export const ImageBlock = memo(({ block }: NotionBlockProps) => {
   );
 });
 
-ImageBlock.displayName = 'ImageBlock';
+ImageBlock.displayName = "ImageBlock";
 
 /**
  * ビデオブロックをレンダリングするコンポーネント
  */
 export const VideoBlock = memo(({ block }: NotionBlockProps) => {
   const videoUrl =
-    block.video?.type === 'external' ? block.video.external?.url : block.video?.file?.url;
+    block.video?.type === "external" ? block.video.external?.url : block.video?.file?.url;
 
   if (!videoUrl) {
     return (
@@ -65,7 +65,7 @@ export const VideoBlock = memo(({ block }: NotionBlockProps) => {
     <div className="my-6">
       <iframe
         src={videoUrl}
-        className="w-full h-96 border-0 rounded shadow-md"
+        className="w-full h-96 border-0 rounded shadow-md transition-transform duration-200 hover:scale-105"
         allowFullScreen
         loading="lazy"
         title="Video content"
@@ -79,7 +79,7 @@ export const VideoBlock = memo(({ block }: NotionBlockProps) => {
   );
 });
 
-VideoBlock.displayName = 'VideoBlock';
+VideoBlock.displayName = "VideoBlock";
 
 /**
  * 埋め込みブロックをレンダリングするコンポーネント
@@ -99,7 +99,7 @@ export const EmbedBlock = memo(({ block }: NotionBlockProps) => {
     <div className="my-4">
       <iframe
         src={url}
-        className="w-full h-96 border-0 rounded shadow-md"
+        className="w-full h-96 border-0 rounded shadow-md transition-transform duration-200 hover:scale-105"
         allowFullScreen
         loading="lazy"
         title="Embedded content"
@@ -113,7 +113,7 @@ export const EmbedBlock = memo(({ block }: NotionBlockProps) => {
   );
 });
 
-EmbedBlock.displayName = 'EmbedBlock';
+EmbedBlock.displayName = "EmbedBlock";
 
 /**
  * ブックマークブロックをレンダリングするコンポーネント
@@ -146,7 +146,7 @@ export const BookmarkBlock = memo(({ block }: NotionBlockProps) => {
   );
 });
 
-BookmarkBlock.displayName = 'BookmarkBlock';
+BookmarkBlock.displayName = "BookmarkBlock";
 
 /**
  * リンクプレビューブロックをレンダリングするコンポーネント
@@ -173,7 +173,7 @@ export const LinkPreviewBlock = memo(({ block }: NotionBlockProps) => {
   }
 });
 
-LinkPreviewBlock.displayName = 'LinkPreviewBlock';
+LinkPreviewBlock.displayName = "LinkPreviewBlock";
 
 /**
  * 数式ブロックをレンダリングするコンポーネント
@@ -193,4 +193,4 @@ export const EquationBlock = memo(({ block }: NotionBlockProps) => {
   return <div className="my-4 p-4 bg-gray-50 rounded overflow-x-auto font-mono">{expression}</div>;
 });
 
-EquationBlock.displayName = 'EquationBlock';
+EquationBlock.displayName = "EquationBlock";

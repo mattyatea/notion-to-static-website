@@ -51,7 +51,6 @@ NOTION_DATABASE_ID=your_notion_database_id
 
 1. Notionで新しいデータベースを作成
 2. 以下のプロパティを持つデータベースを設定：
-
    - `title` (タイトル): ページのタイトル
    - `slug` (テキスト): URLのスラッグ
    - `date` (日付): 公開日
