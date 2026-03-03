@@ -1,12 +1,31 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+import type { NotionBlockWithChildren, RichTextItem } from "@/types/notion";
 import NotionBlock from "./NotionBlock";
+
+const createRichText = (plainText: string): RichTextItem => ({
+  type: "text",
+  plain_text: plainText,
+  href: null,
+  text: {
+    content: plainText,
+    link: null,
+  },
+  annotations: {
+    bold: false,
+    italic: false,
+    strikethrough: false,
+    underline: false,
+    code: false,
+    color: "default",
+  },
+});
 
 // NotionBlockのモックバージョンを作成
 vi.mock("./NotionBlock", () => {
   return {
-    default: ({ block }: { block: Record<string, unknown> }) => {
+    default: ({ block }: { block: NotionBlockWithChildren }) => {
       // block.typeに基づいて適切なJSX要素を返す関数
       const renderContent = () => {
         switch (block.type) {
@@ -38,7 +57,7 @@ vi.mock("./NotionBlock", () => {
               </div>
             );
           case "divider":
-            return <hr role="separator" />;
+            return <hr />;
           case "image":
             return (
               <div>
@@ -55,8 +74,8 @@ vi.mock("./NotionBlock", () => {
             return (
               <details>
                 <summary>{block.toggle?.rich_text?.[0]?.plain_text || ""}</summary>
-                {block.children?.map((child: Record<string, unknown>, index: number) => (
-                  <div key={index}>{child.paragraph?.rich_text?.[0]?.plain_text || ""}</div>
+                {block.children?.map((child: NotionBlockWithChildren) => (
+                  <div key={child.id}>{child.paragraph?.rich_text?.[0]?.plain_text || ""}</div>
                 ))}
               </details>
             );
@@ -75,22 +94,11 @@ vi.mock("./NotionBlock", () => {
 describe("NotionBlock", () => {
   // 段落ブロックのテスト
   it("段落ブロックを正しくレンダリングすること", () => {
-    const paragraphBlock = {
+    const paragraphBlock: NotionBlockWithChildren = {
       id: "test-block",
       type: "paragraph",
       paragraph: {
-        rich_text: [
-          {
-            type: "text",
-            plain_text: "テスト段落",
-            annotations: {
-              bold: false,
-              italic: false,
-              code: false,
-              color: "default",
-            },
-          },
-        ],
+        rich_text: [createRichText("テスト段落")],
       },
     };
 
@@ -100,22 +108,11 @@ describe("NotionBlock", () => {
 
   // 見出しブロックのテスト
   it("見出し1ブロックを正しくレンダリングすること", () => {
-    const headingBlock = {
+    const headingBlock: NotionBlockWithChildren = {
       id: "test-heading",
       type: "heading_1",
       heading_1: {
-        rich_text: [
-          {
-            type: "text",
-            plain_text: "テスト見出し1",
-            annotations: {
-              bold: false,
-              italic: false,
-              code: false,
-              color: "default",
-            },
-          },
-        ],
+        rich_text: [createRichText("テスト見出し1")],
       },
     };
 
@@ -125,22 +122,11 @@ describe("NotionBlock", () => {
   });
 
   it("見出し2ブロックを正しくレンダリングすること", () => {
-    const headingBlock = {
+    const headingBlock: NotionBlockWithChildren = {
       id: "test-heading2",
       type: "heading_2",
       heading_2: {
-        rich_text: [
-          {
-            type: "text",
-            plain_text: "テスト見出し2",
-            annotations: {
-              bold: false,
-              italic: false,
-              code: false,
-              color: "default",
-            },
-          },
-        ],
+        rich_text: [createRichText("テスト見出し2")],
       },
     };
 
@@ -150,22 +136,11 @@ describe("NotionBlock", () => {
   });
 
   it("見出し3ブロックを正しくレンダリングすること", () => {
-    const headingBlock = {
+    const headingBlock: NotionBlockWithChildren = {
       id: "test-heading3",
       type: "heading_3",
       heading_3: {
-        rich_text: [
-          {
-            type: "text",
-            plain_text: "テスト見出し3",
-            annotations: {
-              bold: false,
-              italic: false,
-              code: false,
-              color: "default",
-            },
-          },
-        ],
+        rich_text: [createRichText("テスト見出し3")],
       },
     };
 
@@ -176,22 +151,11 @@ describe("NotionBlock", () => {
 
   // リストアイテムのテスト
   it("箇条書きリストアイテムを正しくレンダリングすること", () => {
-    const listItemBlock = {
+    const listItemBlock: NotionBlockWithChildren = {
       id: "test-list-item",
       type: "bulleted_list_item",
       bulleted_list_item: {
-        rich_text: [
-          {
-            type: "text",
-            plain_text: "リストアイテム",
-            annotations: {
-              bold: false,
-              italic: false,
-              code: false,
-              color: "default",
-            },
-          },
-        ],
+        rich_text: [createRichText("リストアイテム")],
       },
     };
 
@@ -204,22 +168,11 @@ describe("NotionBlock", () => {
   });
 
   it("番号付きリストアイテムを正しくレンダリングすること", () => {
-    const numberedListItemBlock = {
+    const numberedListItemBlock: NotionBlockWithChildren = {
       id: "test-numbered-list-item",
       type: "numbered_list_item",
       numbered_list_item: {
-        rich_text: [
-          {
-            type: "text",
-            plain_text: "番号付きアイテム",
-            annotations: {
-              bold: false,
-              italic: false,
-              code: false,
-              color: "default",
-            },
-          },
-        ],
+        rich_text: [createRichText("番号付きアイテム")],
       },
     };
 
@@ -231,22 +184,11 @@ describe("NotionBlock", () => {
 
   // コードブロックのテスト
   it("コードブロックを正しくレンダリングすること", () => {
-    const codeBlock = {
+    const codeBlock: NotionBlockWithChildren = {
       id: "test-code",
       type: "code",
       code: {
-        rich_text: [
-          {
-            type: "text",
-            plain_text: 'console.log("Hello World");',
-            annotations: {
-              bold: false,
-              italic: false,
-              code: false,
-              color: "default",
-            },
-          },
-        ],
+        rich_text: [createRichText('console.log("Hello World");')],
         language: "javascript",
       },
     };
@@ -260,22 +202,11 @@ describe("NotionBlock", () => {
 
   // 引用ブロックのテスト
   it("引用ブロックを正しくレンダリングすること", () => {
-    const quoteBlock = {
+    const quoteBlock: NotionBlockWithChildren = {
       id: "test-quote",
       type: "quote",
       quote: {
-        rich_text: [
-          {
-            type: "text",
-            plain_text: "引用テキスト",
-            annotations: {
-              bold: false,
-              italic: false,
-              code: false,
-              color: "default",
-            },
-          },
-        ],
+        rich_text: [createRichText("引用テキスト")],
       },
     };
 
@@ -288,22 +219,11 @@ describe("NotionBlock", () => {
 
   // チェックボックスのテスト
   it("チェックされていないto-doアイテムを正しくレンダリングすること", () => {
-    const todoBlock = {
+    const todoBlock: NotionBlockWithChildren = {
       id: "test-todo",
       type: "to_do",
       to_do: {
-        rich_text: [
-          {
-            type: "text",
-            plain_text: "やるべきこと",
-            annotations: {
-              bold: false,
-              italic: false,
-              code: false,
-              color: "default",
-            },
-          },
-        ],
+        rich_text: [createRichText("やるべきこと")],
         checked: false,
       },
     };
@@ -316,22 +236,11 @@ describe("NotionBlock", () => {
   });
 
   it("チェックされたto-doアイテムを正しくレンダリングすること", () => {
-    const todoBlock = {
+    const todoBlock: NotionBlockWithChildren = {
       id: "test-todo-checked",
       type: "to_do",
       to_do: {
-        rich_text: [
-          {
-            type: "text",
-            plain_text: "完了したこと",
-            annotations: {
-              bold: false,
-              italic: false,
-              code: false,
-              color: "default",
-            },
-          },
-        ],
+        rich_text: [createRichText("完了したこと")],
         checked: true,
       },
     };
@@ -345,7 +254,7 @@ describe("NotionBlock", () => {
 
   // 区切り線のテスト
   it("区切り線を正しくレンダリングすること", () => {
-    const dividerBlock = {
+    const dividerBlock: NotionBlockWithChildren = {
       id: "test-divider",
       type: "divider",
       divider: {},
@@ -359,7 +268,7 @@ describe("NotionBlock", () => {
 
   // 画像ブロックのテスト
   it("画像ブロックを正しくレンダリングすること", () => {
-    const imageBlock = {
+    const imageBlock: NotionBlockWithChildren = {
       id: "test-image",
       type: "image",
       image: {
@@ -367,18 +276,7 @@ describe("NotionBlock", () => {
         external: {
           url: "https://example.com/image.jpg",
         },
-        caption: [
-          {
-            type: "text",
-            plain_text: "画像キャプション",
-            annotations: {
-              bold: false,
-              italic: false,
-              code: false,
-              color: "default",
-            },
-          },
-        ],
+        caption: [createRichText("画像キャプション")],
       },
     };
 
@@ -391,22 +289,11 @@ describe("NotionBlock", () => {
 
   // トグルブロックのテスト
   it("トグルブロックを正しくレンダリングすること", () => {
-    const toggleBlock = {
+    const toggleBlock: NotionBlockWithChildren = {
       id: "test-toggle",
       type: "toggle",
       toggle: {
-        rich_text: [
-          {
-            type: "text",
-            plain_text: "トグルタイトル",
-            annotations: {
-              bold: false,
-              italic: false,
-              code: false,
-              color: "default",
-            },
-          },
-        ],
+        rich_text: [createRichText("トグルタイトル")],
       },
       has_children: true,
       children: [
@@ -414,18 +301,7 @@ describe("NotionBlock", () => {
           id: "child-paragraph",
           type: "paragraph",
           paragraph: {
-            rich_text: [
-              {
-                type: "text",
-                plain_text: "子パラグラフ",
-                annotations: {
-                  bold: false,
-                  italic: false,
-                  code: false,
-                  color: "default",
-                },
-              },
-            ],
+            rich_text: [createRichText("子パラグラフ")],
           },
         },
       ],
@@ -438,10 +314,9 @@ describe("NotionBlock", () => {
 
   // エラーハンドリングのテスト
   it("不明なブロックタイプでも壊れずにエラーメッセージを表示すること", () => {
-    const unknownBlock = {
+    const unknownBlock: NotionBlockWithChildren = {
       id: "test-unknown",
       type: "unknown_type",
-      unknown_type: {},
     };
 
     render(<NotionBlock block={unknownBlock} />);
@@ -449,22 +324,11 @@ describe("NotionBlock", () => {
   });
 
   it("子ブロックを持つブロックを正しくレンダリングすること", () => {
-    const parentBlock = {
+    const parentBlock: NotionBlockWithChildren = {
       id: "parent-block",
       type: "paragraph",
       paragraph: {
-        rich_text: [
-          {
-            type: "text",
-            plain_text: "親ブロック",
-            annotations: {
-              bold: false,
-              italic: false,
-              code: false,
-              color: "default",
-            },
-          },
-        ],
+        rich_text: [createRichText("親ブロック")],
       },
       has_children: true,
       children: [
@@ -472,36 +336,14 @@ describe("NotionBlock", () => {
           id: "child-block-1",
           type: "paragraph",
           paragraph: {
-            rich_text: [
-              {
-                type: "text",
-                plain_text: "子ブロック1",
-                annotations: {
-                  bold: false,
-                  italic: false,
-                  code: false,
-                  color: "default",
-                },
-              },
-            ],
+            rich_text: [createRichText("子ブロック1")],
           },
         },
         {
           id: "child-block-2",
           type: "paragraph",
           paragraph: {
-            rich_text: [
-              {
-                type: "text",
-                plain_text: "子ブロック2",
-                annotations: {
-                  bold: false,
-                  italic: false,
-                  code: false,
-                  color: "default",
-                },
-              },
-            ],
+            rich_text: [createRichText("子ブロック2")],
           },
         },
       ],
