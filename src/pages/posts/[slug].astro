@@ -2,6 +2,7 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { getFormattedDatabase, getFormattedPage } from '@/lib/notion';
 import { NotionBlocks } from '@/components/NotionBlock';
+import TagChipLink from '@/components/TagChipLink.astro';
 import type { FormattedPage } from '@/types/notion';
 
 // 静的生成用のパスを生成する関数
@@ -108,9 +109,12 @@ const error = !page ? 'ページが見つかりませんでした。' : null;
             {page?.tags && page?.tags.length > 0 && (
               <div class="flex flex-wrap gap-2 mt-4">
                 {page?.tags.map((tag) => (
-                  <span class="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 text-xs px-2 py-1 rounded">
-                    {tag.name}
-                  </span>
+                  <TagChipLink
+                    tag={tag.name}
+                    trackingSource="post_detail_tag"
+                    context="post_detail"
+                    class="text-gray-800 dark:text-gray-200"
+                  />
                 ))}
               </div>
             )}

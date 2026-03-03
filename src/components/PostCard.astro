@@ -1,4 +1,6 @@
 ---
+import TagChipLink from '@/components/TagChipLink.astro';
+
 // Propsをexportして使用されていることを明示する
 export interface Props {
   title: string;
@@ -21,17 +23,19 @@ const formattedDate = new Date(publishDate).toLocaleDateString('ja-JP', {
 ---
 
 <article class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-900">
-  <a
-    href={url}
-    class="group grid h-full grid-rows-[12rem_1fr] hover:shadow-md transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-    data-ga-event="select_content"
-    data-ga-params={JSON.stringify({
-      content_type: 'article',
-      item_id: url,
-      item_name: title,
-      source: trackingSource,
-    })}
-  >
+  <div class="group relative grid h-full grid-rows-[12rem_1fr] hover:shadow-md transition-shadow">
+    <a
+      href={url}
+      aria-label={`${title}を読む`}
+      class="absolute inset-0 z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+      data-ga-event="select_content"
+      data-ga-params={JSON.stringify({
+        content_type: 'article',
+        item_id: url,
+        item_name: title,
+        source: trackingSource,
+      })}
+    ></a>
     <div class="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-800">
       {coverImage ? (
         <img
@@ -47,20 +51,16 @@ const formattedDate = new Date(publishDate).toLocaleDateString('ja-JP', {
     </div>
 
     <div class="p-6 grid h-full gap-3 content-start">
-      <h3 class="text-xl font-semibold mb-2 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">
+      <h3 class="relative z-20 text-xl font-semibold mb-2 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">
         {title}
       </h3>
 
       {summary && <p class="text-gray-600 dark:text-gray-400">{summary}</p>}
 
-      <div class="flex flex-wrap gap-2">
+      <div class="relative z-20 flex flex-wrap gap-2">
         {
           tags.map((tag) => (
-            <span
-              class="inline-block bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs px-2 py-1 rounded"
-            >
-              {tag}
-            </span>
+            <TagChipLink tag={tag} trackingSource={trackingSource} context="post_card" />
           ))
         }
       </div>
@@ -69,5 +69,5 @@ const formattedDate = new Date(publishDate).toLocaleDateString('ja-JP', {
         {formattedDate}
       </div>
     </div>
-  </a>
+  </div>
 </article>
