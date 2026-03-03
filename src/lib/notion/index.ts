@@ -8,6 +8,7 @@ export { notion, NOTION_DATABASE_ID, log } from './client';
 
 // Caching utilities
 export { getFromCacheOrFetch, clearCache } from './cache';
+export { clearDataSourceIdCache } from './query';
 
 // Database operations
 export { formatPage, formatPages, getFormattedDatabase } from './database';

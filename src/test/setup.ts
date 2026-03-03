@@ -15,34 +15,56 @@ vi.stubGlobal('process', {
 // モックの基本設定
 vi.mock('@notionhq/client', () => {
   const mockRetrieve = vi.fn();
+  const mockRetrieveDatabase = vi.fn();
   const mockListBlocks = vi.fn();
-  const mockQueryDB = vi.fn();
+  const mockQueryDataSource = vi.fn();
+  const mockRequest = vi.fn();
+
+  const testGlobal = globalThis as typeof globalThis & {
+    mockRetrieve: typeof mockRetrieve;
+    mockRetrieveDatabase: typeof mockRetrieveDatabase;
+    mockListBlocks: typeof mockListBlocks;
+    mockQueryDataSource: typeof mockQueryDataSource;
+    mockRequest: typeof mockRequest;
+  };
 
   // グローバルに公開して他のテストファイルからアクセスできるようにする
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
-  (global as unknown).mockRetrieve = mockRetrieve;
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
-  (global as unknown).mockListBlocks = mockListBlocks;
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
-  (global as unknown).mockQueryDB = mockQueryDB;
+  testGlobal.mockRetrieve = mockRetrieve;
+  testGlobal.mockRetrieveDatabase = mockRetrieveDatabase;
+  testGlobal.mockListBlocks = mockListBlocks;
+  testGlobal.mockQueryDataSource = mockQueryDataSource;
+  testGlobal.mockRequest = mockRequest;
 
   return {
-    Client: vi.fn(() => ({
-      pages: {
-        retrieve: mockRetrieve,
-      },
-      blocks: {
-        children: {
-          list: mockListBlocks,
+    APIErrorCode: {
+      ObjectNotFound: 'object_not_found',
+    },
+    isNotionClientError: (error: unknown) => {
+      if (typeof error !== 'object' || error === null) {
+        return false;
+      }
+
+      return 'code' in error;
+    },
+    Client: vi.fn(function Client() {
+      return {
+        pages: {
+          retrieve: mockRetrieve,
         },
-      },
-      databases: {
-        query: mockQueryDB,
-      },
-    })),
+        blocks: {
+          children: {
+            list: mockListBlocks,
+          },
+        },
+        dataSources: {
+          query: mockQueryDataSource,
+        },
+        databases: {
+          retrieve: mockRetrieveDatabase,
+        },
+        request: mockRequest,
+      };
+    }),
   };
 });
 

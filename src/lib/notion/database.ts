@@ -5,9 +5,9 @@ import type {
   PageData,
   PageResponse,
 } from '@/types/notion';
-import { isDatabaseQueryResponse } from '@/types/notion';
 import { getFromCacheOrFetch } from './cache';
-import { log, notion, NOTION_DATABASE_ID } from './client';
+import { log, NOTION_DATABASE_ID } from './client';
+import { queryNotionCollection } from './query';
 
 /**
  * ページオブジェクトをフォーマット済みのページに変換する
@@ -156,18 +156,10 @@ export async function getFormattedDatabase(
       let cursor: string | undefined;
 
       while (hasMore) {
-        const response = await notion.request<Record<string, unknown>>({
-          path: `databases/${databaseId}/query`,
-          method: 'post',
-          body: {
-            ...queryOptions,
-            ...(cursor ? { start_cursor: cursor } : {}),
-          },
+        const response = await queryNotionCollection(databaseId, {
+          ...queryOptions,
+          ...(cursor ? { start_cursor: cursor } : {}),
         });
-
-        if (!isDatabaseQueryResponse(response)) {
-          throw new Error('Notion APIから期待するデータベース形式を取得できませんでした');
-        }
 
         allPages = [...allPages, ...response.results];
         hasMore = response.has_more;

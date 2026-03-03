@@ -1,8 +1,8 @@
 import type { FormattedPage } from '@/types/notion';
-import { isDatabaseQueryResponse } from '@/types/notion';
-import { notion, NOTION_DATABASE_ID, log } from './client';
+import { NOTION_DATABASE_ID, log } from './client';
 import { getFromCacheOrFetch } from './cache';
 import { formatPages, getFormattedDatabase } from './database';
+import { queryNotionCollection } from './query';
 
 /** タグでページをフィルタリングする */
 export async function getPagesByTag(tag: string): Promise<FormattedPage[]> {
@@ -12,36 +12,27 @@ export async function getPagesByTag(tag: string): Promise<FormattedPage[]> {
     log('error', error.message);
     throw error;
   }
+  const dataSourceId = NOTION_DATABASE_ID;
 
   log('info', `Getting pages by tag: ${tag}`);
 
   // キャッシュから取得または新規フェッチ
   return getFromCacheOrFetch(`pages-by-tag:${tag}`, async () => {
     try {
-      const response = await notion.request<Record<string, unknown>>({
-        path: `databases/${NOTION_DATABASE_ID}/query`,
-        method: 'post',
-        body: {
-          filter: {
-            property: 'tags',
-            multi_select: {
-              contains: tag,
-            },
+      const response = await queryNotionCollection(dataSourceId, {
+        filter: {
+          property: 'tags',
+          multi_select: {
+            contains: tag,
           },
-          sorts: [
-            {
-              property: 'date',
-              direction: 'descending',
-            },
-          ],
         },
+        sorts: [
+          {
+            property: 'date',
+            direction: 'descending',
+          },
+        ],
       });
-
-      if (!isDatabaseQueryResponse(response)) {
-        throw new Error(
-          `Notion APIから期待するデータベース形式を取得できませんでした (tag: ${tag})`
-        );
-      }
 
       log('debug', `Found ${response.results.length} pages with tag: ${tag}`);
       return formatPages(response.results);
@@ -89,36 +80,27 @@ export async function getPagesByCategory(category: string): Promise<FormattedPag
     log('error', error.message);
     throw error;
   }
+  const dataSourceId = NOTION_DATABASE_ID;
 
   log('info', `Getting pages by category: ${category}`);
 
   // キャッシュから取得または新規フェッチ
   return getFromCacheOrFetch(`pages-by-category:${category}`, async () => {
     try {
-      const response = await notion.request<Record<string, unknown>>({
-        path: `databases/${NOTION_DATABASE_ID}/query`,
-        method: 'post',
-        body: {
-          filter: {
-            property: 'category',
-            select: {
-              equals: category,
-            },
+      const response = await queryNotionCollection(dataSourceId, {
+        filter: {
+          property: 'category',
+          select: {
+            equals: category,
           },
-          sorts: [
-            {
-              property: 'date',
-              direction: 'descending',
-            },
-          ],
         },
+        sorts: [
+          {
+            property: 'date',
+            direction: 'descending',
+          },
+        ],
       });
-
-      if (!isDatabaseQueryResponse(response)) {
-        throw new Error(
-          `Notion APIから期待するデータベース形式を取得できませんでした (category: ${category})`
-        );
-      }
 
       log('debug', `Found ${response.results.length} pages with category: ${category}`);
       return formatPages(response.results);

@@ -1,17 +1,21 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { getFormattedDatabase } from '@/lib/notion';
+import { getFormattedDatabase, getFormattedPage } from '@/lib/notion';
 import { NotionBlocks } from '@/components/NotionBlock';
 import type { FormattedPage } from '@/types/notion';
 
 // 静的生成用のパスを生成する関数
 export async function getStaticPaths() {
-  let posts: FormattedPage[] = [];
-
   try {
-    posts = await getFormattedDatabase();
+    const posts = await getFormattedDatabase();
+    const postsWithBlocks = await Promise.all(
+      posts.map(async (post) => {
+        const fullPost = await getFormattedPage(post.id, true);
+        return fullPost;
+      })
+    );
 
-    return posts.map((post) => ({
+    return postsWithBlocks.map((post) => ({
       params: { slug: post.slug },
       props: { post },
     }));
@@ -62,11 +66,8 @@ const error = !page ? 'ページが見つかりませんでした。' : null;
 
             {page?.tags && page?.tags.length > 0 && (
               <div class="flex flex-wrap gap-2 mt-4">
-                {page?.tags.map((tag, index) => (
-                  <span
-                    key={`tag-${index}`}
-                    class="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 text-xs px-2 py-1 rounded"
-                  >
+                {page?.tags.map((tag) => (
+                  <span class="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 text-xs px-2 py-1 rounded">
                     {tag.name}
                   </span>
                 ))}

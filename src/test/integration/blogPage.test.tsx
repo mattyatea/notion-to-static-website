@@ -11,27 +11,28 @@ import { mockFormattedPage } from '@/test/mocks/notionData';
 // Notion APIクライアントのモック
 vi.mock('@notionhq/client', () => {
   return {
-    Client: vi.fn(() => ({
-      pages: {
-        retrieve: vi.fn(),
-      },
-      blocks: {
-        children: {
-          list: vi.fn(),
+    Client: vi.fn(function Client() {
+      return {
+        pages: {
+          retrieve: vi.fn(),
         },
-      },
-      databases: {
-        query: vi.fn(),
-      },
-    })),
+        blocks: {
+          children: {
+            list: vi.fn(),
+          },
+        },
+        databases: {
+          query: vi.fn(),
+        },
+        request: vi.fn(),
+      };
+    }),
   };
 });
 
 // getPageBySlugのモックを準備
-vi.mock('../../lib/notion', async () => {
-  const actual = await vi.importActual('../../lib/notion');
+vi.mock('@/lib/notion', () => {
   return {
-    ...actual,
     getPageBySlug: vi.fn(),
   };
 });
