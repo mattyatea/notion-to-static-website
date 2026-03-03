@@ -1,7 +1,10 @@
 ---
-const currentYear = new Date().getFullYear();
+interface Props {
+  siteName: string;
+}
 
-const siteName = Astro.props;
+const { siteName } = Astro.props;
+const currentYear = new Date().getFullYear();
 ---
 
 <footer class="py-6 border-t border-gray-200 dark:border-gray-800">
