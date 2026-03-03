@@ -444,6 +444,38 @@ export interface DatabaseQueryResponse {
   has_more: boolean;
 }
 
+export function isPageResponse(response: unknown): response is PageResponse {
+  return (
+    typeof response === 'object' &&
+    response !== null &&
+    'id' in response &&
+    typeof response.id === 'string' &&
+    'properties' in response &&
+    typeof response.properties === 'object' &&
+    response.properties !== null
+  );
+}
+
+export function isDatabaseQueryResponse(value: unknown): value is DatabaseQueryResponse {
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  const response = value as {
+    object?: unknown;
+    results?: unknown;
+    next_cursor?: unknown;
+    has_more?: unknown;
+  };
+
+  return (
+    response.object === 'list' &&
+    Array.isArray(response.results) &&
+    (typeof response.next_cursor === 'string' || response.next_cursor === null) &&
+    typeof response.has_more === 'boolean'
+  );
+}
+
 /**
  * Notionブロックコンポーネントのprops型
  */

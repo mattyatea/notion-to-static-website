@@ -1,4 +1,5 @@
-import type { FormattedPage, DatabaseQueryResponse } from '@/types/notion';
+import type { FormattedPage } from '@/types/notion';
+import { isDatabaseQueryResponse } from '@/types/notion';
 import { notion, NOTION_DATABASE_ID, log } from './client';
 import { getFromCacheOrFetch } from './cache';
 import { formatPages, getFormattedDatabase } from './database';
@@ -17,21 +18,30 @@ export async function getPagesByTag(tag: string): Promise<FormattedPage[]> {
   // キャッシュから取得または新規フェッチ
   return getFromCacheOrFetch(`pages-by-tag:${tag}`, async () => {
     try {
-      const response = (await notion.databases.query({
-        database_id: NOTION_DATABASE_ID!,
-        filter: {
-          property: 'tags',
-          multi_select: {
-            contains: tag,
+      const response = await notion.request<Record<string, unknown>>({
+        path: `databases/${NOTION_DATABASE_ID}/query`,
+        method: 'post',
+        body: {
+          filter: {
+            property: 'tags',
+            multi_select: {
+              contains: tag,
+            },
           },
+          sorts: [
+            {
+              property: 'date',
+              direction: 'descending',
+            },
+          ],
         },
-        sorts: [
-          {
-            property: 'date',
-            direction: 'descending',
-          },
-        ],
-      })) as unknown as DatabaseQueryResponse;
+      });
+
+      if (!isDatabaseQueryResponse(response)) {
+        throw new Error(
+          `Notion APIから期待するデータベース形式を取得できませんでした (tag: ${tag})`
+        );
+      }
 
       log('debug', `Found ${response.results.length} pages with tag: ${tag}`);
       return formatPages(response.results);
@@ -54,7 +64,9 @@ export async function getAllTags(): Promise<string[]> {
       const tagsSet = new Set<string>();
 
       pages.forEach((page) => {
-        page.tags.forEach((tag) => tagsSet.add(tag.name));
+        page.tags.forEach((tag) => {
+          tagsSet.add(tag.name);
+        });
       });
 
       const tags = Array.from(tagsSet).sort();
@@ -83,21 +95,30 @@ export async function getPagesByCategory(category: string): Promise<FormattedPag
   // キャッシュから取得または新規フェッチ
   return getFromCacheOrFetch(`pages-by-category:${category}`, async () => {
     try {
-      const response = (await notion.databases.query({
-        database_id: NOTION_DATABASE_ID!,
-        filter: {
-          property: 'category',
-          select: {
-            equals: category,
+      const response = await notion.request<Record<string, unknown>>({
+        path: `databases/${NOTION_DATABASE_ID}/query`,
+        method: 'post',
+        body: {
+          filter: {
+            property: 'category',
+            select: {
+              equals: category,
+            },
           },
+          sorts: [
+            {
+              property: 'date',
+              direction: 'descending',
+            },
+          ],
         },
-        sorts: [
-          {
-            property: 'date',
-            direction: 'descending',
-          },
-        ],
-      })) as unknown as DatabaseQueryResponse;
+      });
+
+      if (!isDatabaseQueryResponse(response)) {
+        throw new Error(
+          `Notion APIから期待するデータベース形式を取得できませんでした (category: ${category})`
+        );
+      }
 
       log('debug', `Found ${response.results.length} pages with category: ${category}`);
       return formatPages(response.results);

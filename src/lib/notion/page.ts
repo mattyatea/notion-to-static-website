@@ -7,6 +7,8 @@ import type {
   FormattedPage,
   DatabaseQueryResponse,
 } from '@/types/notion';
+import { isDatabaseQueryResponse, isPageResponse } from '@/types/notion';
+import type { GetPageResponse } from '@notionhq/client/build/src/api-endpoints';
 
 /**
  * Notionページの情報を取得する
@@ -20,9 +22,13 @@ export async function getPage(pageId: string): Promise<PageResponse> {
   // キャッシュから取得または新規フェッチ
   return getFromCacheOrFetch(`page:${pageId}`, async () => {
     try {
-      const response = (await notion.pages.retrieve({
+      const response: GetPageResponse = await notion.pages.retrieve({
         page_id: pageId,
-      })) as unknown as PageResponse;
+      });
+
+      if (!isPageResponse(response)) {
+        throw new Error(`Notion APIから期待するページ形式を取得できませんでした (ID: ${pageId})`);
+      }
 
       log('debug', `Successfully fetched page: ${pageId}`);
       return response;
@@ -164,15 +170,24 @@ export async function getPageBySlug(slug: string): Promise<FormattedPage | null>
   // キャッシュから取得または新規フェッチ
   return getFromCacheOrFetch(`page-by-slug:${slug}`, async () => {
     try {
-      const response = (await notion.databases.query({
-        database_id: NOTION_DATABASE_ID,
-        filter: {
-          property: 'slug',
-          rich_text: {
-            equals: slug,
+      const response = await notion.request<Record<string, unknown>>({
+        path: `databases/${NOTION_DATABASE_ID}/query`,
+        method: 'post',
+        body: {
+          filter: {
+            property: 'slug',
+            rich_text: {
+              equals: slug,
+            },
           },
         },
-      })) as unknown as DatabaseQueryResponse;
+      });
+
+      if (!isDatabaseQueryResponse(response)) {
+        throw new Error(
+          `Notion APIから期待するデータベース形式を取得できませんでした (slug: ${slug})`
+        );
+      }
 
       if (response.results.length === 0) {
         log('debug', `No page found with slug: ${slug}`);

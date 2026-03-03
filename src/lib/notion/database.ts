@@ -5,6 +5,7 @@ import type {
   PageData,
   PageResponse,
 } from '@/types/notion';
+import { isDatabaseQueryResponse } from '@/types/notion';
 import { getFromCacheOrFetch } from './cache';
 import { log, notion, NOTION_DATABASE_ID } from './client';
 
@@ -126,7 +127,6 @@ export async function getFormattedDatabase(
   return getFromCacheOrFetch(`formatted-database:${filterByStatus}:${status}`, async () => {
     try {
       interface QueryOptions {
-        database_id: string;
         sorts: {
           property: string;
           direction: 'ascending' | 'descending';
@@ -141,7 +141,6 @@ export async function getFormattedDatabase(
       }
 
       const queryOptions: QueryOptions = {
-        database_id: databaseId,
         sorts: [{ property: 'date', direction: 'descending' }],
       };
 
@@ -152,18 +151,23 @@ export async function getFormattedDatabase(
         };
       }
 
-      const databasesApi = notion.databases as unknown as {
-        query: (args: QueryOptions) => Promise<unknown>;
-      };
       let allPages: PageResponse[] = [];
       let hasMore = true;
       let cursor: string | undefined;
 
       while (hasMore) {
-        const response = (await databasesApi.query({
-          ...queryOptions,
-          ...(cursor ? { start_cursor: cursor } : {}),
-        })) as unknown as DatabaseQueryResponse;
+        const response = await notion.request<Record<string, unknown>>({
+          path: `databases/${databaseId}/query`,
+          method: 'post',
+          body: {
+            ...queryOptions,
+            ...(cursor ? { start_cursor: cursor } : {}),
+          },
+        });
+
+        if (!isDatabaseQueryResponse(response)) {
+          throw new Error('Notion APIから期待するデータベース形式を取得できませんでした');
+        }
 
         allPages = [...allPages, ...response.results];
         hasMore = response.has_more;
