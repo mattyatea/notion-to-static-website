@@ -1,6 +1,6 @@
 import { notion, NOTION_DATABASE_ID, log } from './client';
 import { getFromCacheOrFetch } from './cache';
-import { formatPage } from './database';
+import { formatPage, getFormattedDatabase } from './database';
 import type { PageResponse, NotionBlockWithChildren, FormattedPage } from '@/types/notion';
 import { isPageResponse } from '@/types/notion';
 import type { GetPageResponse } from '@notionhq/client/build/src/api-endpoints';
@@ -154,40 +154,54 @@ export async function getFormattedPage(pageId: string, fetchBlocks = true): Prom
  * @throws ページの取得に失敗した場合のエラー
  */
 export async function getPageBySlug(slug: string): Promise<FormattedPage | null> {
-  // データベースIDをチェック - 早期リターンによるエラー処理
-  if (!NOTION_DATABASE_ID) {
+  const dataSourceId = NOTION_DATABASE_ID;
+  if (!dataSourceId) {
     const error = new Error('NOTION_DATABASE_IDが設定されていません');
     log('error', error.message);
     throw error;
   }
-  const dataSourceId = NOTION_DATABASE_ID;
 
-  log('info', `Getting page by slug: ${slug}`);
+  const trimmedSlug = slug.trim();
+  if (!trimmedSlug) {
+    log('debug', 'Received empty slug when fetching page');
+    return null;
+  }
 
-  // キャッシュから取得または新規フェッチ
-  return getFromCacheOrFetch(`page-by-slug:${slug}`, async () => {
+  const normalizedSlug = trimmedSlug.toLowerCase();
+  const cacheKey = `page-by-slug:${normalizedSlug}`;
+  log('info', `Getting page by slug`, { requested: slug, normalized: normalizedSlug });
+
+  return getFromCacheOrFetch(cacheKey, async () => {
     try {
       const response = await queryNotionCollection(dataSourceId, {
         filter: {
           property: 'slug',
           rich_text: {
-            equals: slug,
+            equals: trimmedSlug,
           },
         },
       });
 
-      if (response.results.length === 0) {
-        log('debug', `No page found with slug: ${slug}`);
+      let pageId: string | undefined;
+
+      if (response.results.length > 0) {
+        pageId = response.results[0].id;
+        log('debug', `Found page with slug ${trimmedSlug}, ID: ${pageId}`);
+      } else {
+        log('debug', `No page found with slug ${trimmedSlug}, searching fallback lookup`);
+        const formattedPages = await getFormattedDatabase();
+        const fallback = formattedPages.find((page) => page.slug.toLowerCase() === normalizedSlug);
+        if (fallback) {
+          pageId = fallback.id;
+          log('debug', `Found fallback page for slug ${normalizedSlug}, ID: ${pageId}`);
+        }
+      }
+
+      if (!pageId) {
         return null;
       }
 
-      const pageId = response.results[0].id;
-      log('debug', `Found page with slug ${slug}, ID: ${pageId}`);
-
-      const blocks = await getBlocks(pageId);
-      const page = await getPage(pageId);
-
-      return formatPage(page, blocks);
+      return getFormattedPage(pageId);
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : '不明なエラー';
       log('error', `Failed to find page by slug (${slug}):`, error);

@@ -25,6 +25,7 @@ vi.mock('@notionhq/client', () => {
     mockRetrieveDatabase: typeof mockRetrieveDatabase;
     mockListBlocks: typeof mockListBlocks;
     mockQueryDataSource: typeof mockQueryDataSource;
+    mockQueryDB: typeof mockQueryDataSource;
     mockRequest: typeof mockRequest;
   };
 
@@ -33,6 +34,7 @@ vi.mock('@notionhq/client', () => {
   testGlobal.mockRetrieveDatabase = mockRetrieveDatabase;
   testGlobal.mockListBlocks = mockListBlocks;
   testGlobal.mockQueryDataSource = mockQueryDataSource;
+  testGlobal.mockQueryDB = mockQueryDataSource;
   testGlobal.mockRequest = mockRequest;
 
   return {

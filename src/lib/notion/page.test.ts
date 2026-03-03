@@ -7,7 +7,8 @@ import {
   getPage,
   getPageBySlug,
 } from './index';
-import { mockBlocks, mockPageResponse } from '@/test/mocks/notionData';
+import { mockBlocks, mockFormattedPage, mockPageResponse } from '@/test/mocks/notionData';
+import * as databaseModule from './database';
 
 type GlobalNotionMocks = {
   mockRetrieve: Mock;
@@ -17,6 +18,7 @@ type GlobalNotionMocks = {
 
 const { mockRetrieve, mockListBlocks, mockQueryDataSource } =
   globalThis as unknown as GlobalNotionMocks;
+const getFormattedDatabaseSpy = vi.spyOn(databaseModule, 'getFormattedDatabase');
 
 describe('Notion page module', () => {
   beforeEach(() => {
@@ -27,8 +29,8 @@ describe('Notion page module', () => {
     clearDataSourceIdCache();
   });
 
-  afterEach(() => {
-    vi.clearAllMocks();
+  afterAll(() => {
+    getFormattedDatabaseSpy.mockRestore();
   });
 
   describe('getPage', () => {
@@ -204,6 +206,24 @@ describe('Notion page module', () => {
       await expect(getPageBySlug('test-page')).rejects.toThrow(
         'スラッグからページの取得に失敗しました'
       );
+    });
+
+    it('falls back to case-insensitive slug lookup', async () => {
+      mockQueryDataSource.mockResolvedValue({
+        results: [],
+        has_more: false,
+        object: 'list',
+        next_cursor: null,
+      });
+      getFormattedDatabaseSpy.mockResolvedValue([mockFormattedPage]);
+      mockRetrieve.mockResolvedValue(mockPageResponse);
+      mockListBlocks.mockResolvedValue({ results: mockBlocks, has_more: false });
+
+      const page = await getPageBySlug('TEST-PAGE');
+
+      expect(page).not.toBeNull();
+      expect(page?.slug).toBe('test-page');
+      expect(getFormattedDatabaseSpy).toHaveBeenCalled();
     });
   });
 });
