@@ -16,7 +16,18 @@ try {
 }
 ---
 
-<BaseLayout title="ブログ記事一覧">
+<BaseLayout
+  title="ブログ記事一覧"
+  summary="公開中のブログ記事一覧ページです。気になるテーマの記事をまとめて確認できます。"
+  canonicalPath="/posts"
+  structuredData={{
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'ブログ記事一覧',
+    url: import.meta.env.PUBLIC_SITE_URL ? new URL('/posts', import.meta.env.PUBLIC_SITE_URL).toString() : undefined,
+    inLanguage: 'ja-JP',
+  }}
+>
   <h1 class="text-3xl font-bold mb-8">ブログ記事一覧</h1>
 
   {
@@ -44,6 +55,7 @@ try {
               url={`/posts/${post.slug}`}
               tags={post.tags.map((tag) => tag.name)}
               coverImage={post.thumbnail?.url}
+              trackingSource="posts_index"
             />
           </Fragment>
         ))}

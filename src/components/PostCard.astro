@@ -7,9 +7,10 @@ export interface Props {
   url: string;
   tags?: string[];
   coverImage?: string;
+  trackingSource?: string;
 }
 
-const { title, summary, publishDate, url, tags = [], coverImage } = Astro.props;
+const { title, summary, publishDate, url, tags = [], coverImage, trackingSource = 'unknown' } = Astro.props;
 
 // 日付のフォーマット
 const formattedDate = new Date(publishDate).toLocaleDateString('ja-JP', {
@@ -23,6 +24,13 @@ const formattedDate = new Date(publishDate).toLocaleDateString('ja-JP', {
   <a
     href={url}
     class="group grid h-full grid-rows-[12rem_1fr] hover:shadow-md transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+    data-ga-event="select_content"
+    data-ga-params={JSON.stringify({
+      content_type: 'article',
+      item_id: url,
+      item_name: title,
+      source: trackingSource,
+    })}
   >
     <div class="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-800">
       {coverImage ? (

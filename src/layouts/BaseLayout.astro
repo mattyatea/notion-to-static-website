@@ -3,7 +3,30 @@ import '@/styles/global.css';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 const siteName = process.env.SITE_NAME ?? 'notion to static page';
-const { title = siteName, summary } = Astro.props;
+const siteUrl = import.meta.env.PUBLIC_SITE_URL?.replace(/\/$/, '');
+const gaMeasurementId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID?.trim();
+
+const {
+  title = siteName,
+  summary,
+  canonicalPath,
+  canonicalUrl,
+  ogImage,
+  noindex = false,
+  type = 'website',
+  publishedTime,
+  modifiedTime,
+  structuredData,
+} = Astro.props;
+
+const pageTitle = title === siteName ? siteName : `${title} | ${siteName}`;
+const pageSummary = summary?.trim() || `${siteName}の公式サイトです。`;
+
+const resolvedCanonicalUrl =
+  canonicalUrl ?? (canonicalPath && siteUrl ? new URL(canonicalPath, siteUrl).toString() : undefined);
+
+const robotsContent = noindex ? 'noindex, nofollow' : 'index, follow';
+const twitterCardType = ogImage ? 'summary_large_image' : 'summary';
 ---
 
 <!doctype html>
@@ -13,11 +36,96 @@ const { title = siteName, summary } = Astro.props;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
     <meta name="view-transition" content="same-origin" />
-    <meta property="og:description" content={summary} />
+    <meta name="description" content={pageSummary} />
+    <meta name="robots" content={robotsContent} />
+    {resolvedCanonicalUrl && <link rel="canonical" href={resolvedCanonicalUrl} />}
+    <meta property="og:description" content={pageSummary} />
     <meta property="og:site_name" content={siteName} />
-    <meta property="og:type" content={summary ? 'article' : 'website'} />
-    <meta property="og:title" content={title} />
-    <title>{title}</title>
+    <meta property="og:locale" content="ja_JP" />
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={pageTitle} />
+    {resolvedCanonicalUrl && <meta property="og:url" content={resolvedCanonicalUrl} />}
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta name="twitter:card" content={twitterCardType} />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageSummary} />
+    {ogImage && <meta name="twitter:image" content={ogImage} />}
+    {publishedTime && <meta property="article:published_time" content={publishedTime} />}
+    {modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+    <title>{pageTitle}</title>
+    {structuredData && (
+      <script type="application/ld+json" set:html={JSON.stringify(structuredData)}></script>
+    )}
+    {gaMeasurementId && <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}></script>}
+    {gaMeasurementId && (
+      <script is:inline>
+        {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+
+gtag('js', new Date());
+gtag('config', '${gaMeasurementId}', {
+  anonymize_ip: true,
+  send_page_view: false
+});
+
+const parseAnalyticsParams = (rawParams) => {
+  if (!rawParams) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(rawParams);
+  } catch {
+    return {};
+  }
+};
+
+const trackPageView = () => {
+  const pagePath = window.location.pathname + window.location.search;
+
+  if (window.__gaLastTrackedPath === pagePath) {
+    return;
+  }
+
+  window.__gaLastTrackedPath = pagePath;
+  gtag('event', 'page_view', {
+    page_title: document.title,
+    page_location: window.location.href,
+    page_path: pagePath
+  });
+};
+
+if (!window.__gaClickTrackingAttached) {
+  document.addEventListener('click', (event) => {
+    const eventTarget = event.target;
+    if (!(eventTarget instanceof Element)) {
+      return;
+    }
+
+    const trackingElement = eventTarget.closest('[data-ga-event]');
+    if (!trackingElement) {
+      return;
+    }
+
+    const eventName = trackingElement.getAttribute('data-ga-event');
+    if (!eventName) {
+      return;
+    }
+
+    const eventParams = parseAnalyticsParams(trackingElement.getAttribute('data-ga-params'));
+    gtag('event', eventName, eventParams);
+  });
+
+  window.__gaClickTrackingAttached = true;
+}
+
+if (!window.__gaPageViewTrackingAttached) {
+  trackPageView();
+  document.addEventListener('astro:page-load', trackPageView);
+  window.__gaPageViewTrackingAttached = true;
+}`}
+      </script>
+    )}
     <script is:inline>
       (() => {
         try {

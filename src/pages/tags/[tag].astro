@@ -17,6 +17,7 @@ export async function getStaticPaths() {
 }
 
 const { tag } = Astro.params;
+const encodedTag = encodeURIComponent(tag ?? '');
 
 // 指定されたタグの記事を取得
 import type { FormattedPage } from '@/types/notion';
@@ -29,7 +30,17 @@ try {
 }
 ---
 
-<BaseLayout title={`${tag} の記事一覧`}>
+<BaseLayout
+  title={`${tag} の記事一覧`}
+  summary={`「${tag}」タグがついた記事の一覧ページです。`}
+  canonicalPath={`/tags/${encodedTag}`}
+  structuredData={{
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: `${tag} の記事一覧`,
+    inLanguage: 'ja-JP',
+  }}
+>
   <div class="max-w-4xl mx-auto">
     <header class="mb-10">
       <h1 class="text-3xl font-bold mb-2 flex items-center">
@@ -53,6 +64,7 @@ try {
                 url={`/posts/${post.slug}`}
                 tags={post.tags.map((tag) => tag.name)}
                 coverImage={post.thumbnail?.url}
+                trackingSource={`tag_${tag}`}
               />
             </Fragment>
           ))}
@@ -82,9 +94,9 @@ try {
           stroke="currentColor"
         >
           <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
             d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
         </svg>
         すべての記事に戻る

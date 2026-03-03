@@ -30,13 +30,38 @@ const page = Astro.props.post as FormattedPage | null;
 
 // タイトルを取得
 const title = page?.title || '無題';
-const summary = page?.summary || 'summary';
+const summary = page?.summary || `${title}の記事ページです。`;
+const canonicalPath = page?.slug ? `/posts/${page.slug}` : undefined;
+const ogImage = page?.thumbnail?.url;
+const articleStructuredData = page
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: title,
+      description: summary,
+      image: ogImage,
+      datePublished: page.date,
+      dateModified: page.updatedAt || page.date,
+      author: page.author?.name ? { '@type': 'Person', name: page.author.name } : undefined,
+      inLanguage: 'ja-JP',
+    }
+  : undefined;
 
 // エラーメッセージ（getStaticPaths が空を返すと post は undefined になる）
 const error = !page ? 'ページが見つかりませんでした。' : null;
 ---
 
-<BaseLayout title={title} summary={summary}>
+<BaseLayout
+  title={title}
+  summary={summary}
+  canonicalPath={canonicalPath}
+  ogImage={ogImage}
+  type="article"
+  publishedTime={page?.date}
+  modifiedTime={page?.updatedAt || page?.date}
+  noindex={!page}
+  structuredData={articleStructuredData}
+>
   {
     error ? (
       <div class="bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded mb-6">
@@ -44,14 +69,30 @@ const error = !page ? 'ページが見つかりませんでした。' : null;
           <strong>エラー:</strong> ページの取得に失敗しました。
         </p>
         <p class="text-sm">{error}</p>
-        <a href="/posts" class="inline-block mt-3 text-blue-500 dark:text-blue-400 hover:underline">
+        <a
+          href="/posts"
+          class="inline-block mt-3 text-blue-500 dark:text-blue-400 hover:underline"
+          data-ga-event="view_item_list"
+          data-ga-params={JSON.stringify({
+            item_list_name: 'all_posts',
+            source: 'post_detail_error',
+          })}
+        >
           ← 一覧に戻る
         </a>
       </div>
     ) : (
       <>
         <div class="mb-6">
-          <a href="/posts" class="text-blue-500 dark:text-blue-400 hover:underline">
+          <a
+            href="/posts"
+            class="text-blue-500 dark:text-blue-400 hover:underline"
+            data-ga-event="view_item_list"
+            data-ga-params={JSON.stringify({
+              item_list_name: 'all_posts',
+              source: 'post_detail',
+            })}
+          >
             ← 一覧に戻る
           </a>
         </div>

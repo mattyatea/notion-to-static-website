@@ -18,12 +18,30 @@ try {
 }
 ---
 
-<BaseLayout title="ホーム">
+<BaseLayout
+  title="ホーム"
+  summary="NotionをCMSとして使ったAstro製ブログ。最新の記事や更新情報をチェックできます。"
+  canonicalPath="/"
+  structuredData={{
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: import.meta.env.SITE_NAME ?? 'notion to static page',
+    url: import.meta.env.PUBLIC_SITE_URL,
+    inLanguage: 'ja-JP',
+  }}
+>
   <section class="mb-12">
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-2xl font-bold">最新の記事</h2>
-      <a href="/posts" class="text-blue-600 dark:text-blue-400 hover:underline"
-        >すべての記事を見る</a
+      <a
+        href="/posts"
+        class="text-blue-600 dark:text-blue-400 hover:underline"
+        data-ga-event="view_item_list"
+        data-ga-params={JSON.stringify({
+          item_list_name: 'all_posts',
+          source: 'home_recent_posts',
+        })}
+      >すべての記事を見る</a
       >
     </div>
 
@@ -54,6 +72,7 @@ try {
                 url={`/posts/${post.slug}`}
                 tags={post.tags.map((tag) => tag.name)}
                 coverImage={post.thumbnail?.url}
+                trackingSource="home_recent_posts"
               />
             </Fragment>
           ))}

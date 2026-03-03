@@ -42,6 +42,8 @@ pnpm install
 
 ```
 SITE_NAME=your_site_name
+PUBLIC_SITE_URL=https://example.com
+PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 
 NOTION_API_KEY=your_notion_api_key
 NOTION_DATABASE_ID=your_notion_database_id

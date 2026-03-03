@@ -22,7 +22,15 @@ const { siteName } = Astro.props;
             </a>
           </li>
           <li>
-            <a href="/posts" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            <a
+              href="/posts"
+              class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              data-ga-event="view_item_list"
+              data-ga-params={JSON.stringify({
+                item_list_name: 'all_posts',
+                source: 'header_nav',
+              })}
+            >
               ブログ
             </a>
           </li>
