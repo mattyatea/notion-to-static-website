@@ -68,3 +68,88 @@
 .prose pre code {
   @apply bg-transparent p-0;
 }
+
+@supports (view-transition-name: none) {
+  @view-transition {
+    navigation: auto;
+  }
+
+  .transition-header {
+    view-transition-name: site-header;
+  }
+
+  .page-transition-surface {
+    view-transition-name: site-main;
+  }
+
+  .transition-footer {
+    view-transition-name: site-footer;
+  }
+
+  ::view-transition-group(root) {
+    animation-duration: 1ms;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+
+  ::view-transition-old(site-main) {
+    animation: 220ms ease-out both vt-fade-slide-out;
+  }
+
+  ::view-transition-new(site-main) {
+    animation: 320ms cubic-bezier(0.16, 1, 0.3, 1) both vt-fade-slide-in;
+  }
+
+  ::view-transition-old(site-header),
+  ::view-transition-new(site-header),
+  ::view-transition-old(site-footer),
+  ::view-transition-new(site-footer) {
+    animation-duration: 220ms;
+  }
+}
+
+@keyframes vt-fade-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes vt-fade-slide-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  @supports (view-transition-name: none) {
+    @view-transition {
+      navigation: none;
+    }
+
+    ::view-transition-group(*),
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+      animation: none;
+    }
+  }
+}
