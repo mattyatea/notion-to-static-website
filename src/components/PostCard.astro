@@ -50,14 +50,14 @@ const formattedDate = new Date(publishDate).toLocaleDateString('ja-JP', {
       )}
     </div>
 
-    <div class="p-6 grid h-full gap-3 content-start">
+    <div class="p-6 grid gap-2 grid-rows-[auto_auto_auto_auto]">
       <h3 class="relative z-20 text-xl font-semibold mb-2 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">
         {title}
       </h3>
 
-      {summary && <p class="text-gray-600 dark:text-gray-400">{summary}</p>}
+      {summary && <p class="text-gray-600 dark:text-gray-400 row-start-2">{summary}</p>}
 
-      <div class="relative z-20 flex flex-wrap gap-2">
+      <div class="relative z-20 row-start-3 flex flex-wrap items-start gap-2">
         {
           tags.map((tag) => (
             <TagChipLink tag={tag} trackingSource={trackingSource} context="post_card" />
@@ -65,7 +65,7 @@ const formattedDate = new Date(publishDate).toLocaleDateString('ja-JP', {
         }
       </div>
 
-      <div class="mt-auto text-sm text-gray-500 dark:text-gray-400">
+      <div class="text-sm text-gray-500 dark:text-gray-400 row-start-4">
         {formattedDate}
       </div>
     </div>
