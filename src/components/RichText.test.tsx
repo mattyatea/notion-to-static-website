@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { RichText } from './NotionBlock';
-import type { RichTextItem } from '../types/notion';
+import type { RichTextItem } from '@/types/notion';
 
 describe('RichText', () => {
   it('リッチテキストが空の場合はnullを返すこと', () => {

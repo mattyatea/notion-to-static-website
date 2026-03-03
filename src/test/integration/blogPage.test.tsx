@@ -4,9 +4,9 @@
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { getPageBySlug } from '../../lib/notion';
-import { NotionBlocks } from '../../components/NotionBlock';
-import { mockFormattedPage } from '../mocks/notionData';
+import { getPageBySlug } from '@/lib/notion';
+import { NotionBlocks } from '@/components/NotionBlock';
+import { mockFormattedPage } from '@/test/mocks/notionData';
 
 // Notion APIクライアントのモック
 vi.mock('@notionhq/client', () => {

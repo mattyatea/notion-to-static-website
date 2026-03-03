@@ -20,7 +20,7 @@ import {
   mockDatabaseQueryResponse,
   mockMultiPageResponse,
   mockPageResponse,
-} from '../test/mocks/notionData';
+} from '@/test/mocks/notionData';
 
 /**
  * Notion APIクライアントのテスト
