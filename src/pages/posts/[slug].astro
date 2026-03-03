@@ -1,8 +1,8 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getFormattedDatabase, getPageBySlug } from '../../lib/notion';
+import { getFormattedDatabase, getPageBySlug } from '@/lib/notion';
 import { NotionBlocks } from '../../components/NotionBlock';
-import type { FormattedPage } from '../../lib/notion';
+import type { FormattedPage } from '@/types/notion';
 
 // スラッグを取得
 const { slug } = Astro.params;

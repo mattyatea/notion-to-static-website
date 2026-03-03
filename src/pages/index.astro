@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getFormattedDatabase } from '../lib/notion';
-import type { FormattedPage } from '../lib/notion';
+import { getFormattedDatabase } from '@/lib/notion';
+import type { FormattedPage } from '@/types/notion';
 
 // 最新の投稿を取得
 let recentPosts: FormattedPage[] = [];

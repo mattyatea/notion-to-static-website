@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import PostCard from '@/components/PostCard.astro';
-import { getAllTags, getPagesByTag } from '../../lib/notion';
+import { getAllTags, getPagesByTag } from '@/lib/notion';
 
 export async function getStaticPaths() {
   try {
