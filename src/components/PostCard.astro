@@ -19,23 +19,33 @@ const formattedDate = new Date(publishDate).toLocaleDateString('ja-JP', {
 });
 ---
 
-<article class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+<article class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-900">
   <a
     href={url}
-    class="group block h-full hover:shadow-md transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+    class="group grid h-full grid-rows-[12rem_1fr] hover:shadow-md transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
   >
-    {coverImage && (
-      <img src={coverImage} alt={title} class="w-full h-48 object-cover" />
-    )}
+    <div class="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-800">
+      {coverImage ? (
+        <img
+          src={coverImage}
+          alt={title}
+          class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+        />
+      ) : (
+        <div class="grid h-full place-items-center bg-gradient-to-br from-gray-100 via-gray-50 to-gray-200 text-gray-500 dark:from-gray-800 dark:via-gray-800 dark:to-gray-700 dark:text-gray-400">
+          <span class="text-xs tracking-[0.12em] uppercase">No Image</span>
+        </div>
+      )}
+    </div>
 
-    <div class="p-6">
+    <div class="p-6 grid h-full gap-3 content-start">
       <h3 class="text-xl font-semibold mb-2 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">
         {title}
       </h3>
 
-      {summary && <p class="text-gray-600 dark:text-gray-400 mb-4">{summary}</p>}
+      {summary && <p class="text-gray-600 dark:text-gray-400">{summary}</p>}
 
-      <div class="flex flex-wrap gap-2 mb-3">
+      <div class="flex flex-wrap gap-2">
         {
           tags.map((tag) => (
             <span
@@ -47,7 +57,7 @@ const formattedDate = new Date(publishDate).toLocaleDateString('ja-JP', {
         }
       </div>
 
-      <div class="text-sm text-gray-500 dark:text-gray-400">
+      <div class="mt-auto text-sm text-gray-500 dark:text-gray-400">
         {formattedDate}
       </div>
     </div>
