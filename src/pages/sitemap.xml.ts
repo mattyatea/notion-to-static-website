@@ -1,4 +1,4 @@
-import type { APIRoute } from "astro";
+import type { APIContext, APIRoute } from "astro";
 import { getAllTags, getFormattedDatabase } from "@/lib/notion";
 
 function escapeXml(value: string): string {
@@ -10,16 +10,21 @@ function escapeXml(value: string): string {
     .replace(/'/g, "&apos;");
 }
 
-export const GET: APIRoute = async () => {
-  const siteUrl = import.meta.env.PUBLIC_SITE_URL?.replace(/\/$/, "");
+export const GET: APIRoute = async (context: APIContext) => {
+  const siteUrl =
+    import.meta.env.PUBLIC_SITE_URL?.replace(/\/$/, "") ??
+    context.site?.toString().replace(/\/$/, "");
 
   if (!siteUrl) {
-    return new Response("PUBLIC_SITE_URL is required to generate sitemap.xml", {
-      status: 500,
-      headers: {
-        "Content-Type": "text/plain; charset=utf-8",
+    return new Response(
+      "PUBLIC_SITE_URL environment variable is required to generate sitemap.xml",
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8",
+        },
       },
-    });
+    );
   }
 
   const [posts, tags] = await Promise.all([getFormattedDatabase(), getAllTags()]);
