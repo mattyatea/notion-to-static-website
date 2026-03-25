@@ -80,6 +80,25 @@ pnpm build
 
 `dist/` ディレクトリに生成されたファイルをお好みのホスティングサービス（Netlify、Vercel、GitHub Pagesなど）にデプロイします。
 
+### 差分ビルド（Notion APIキャッシュ再利用）
+
+Notion APIのレスポンスキャッシュをビルド間で再利用したい場合は、以下を使用します。
+
+```bash
+pnpm build:diff
+```
+
+このコマンドは `.cache/notion-api-cache.json` を利用して前回ビルド時の取得結果を再利用するため、変更が少ないときのビルド時間とAPIコール数を抑えられます。加えて、Notionの `last_edited_time` を使って内容差分を検出し、更新があった場合は該当キャッシュキーを切り替えて再取得します。
+
+Cloudflare Workers/Pages のビルドで使う場合は、以下を使用してください。
+
+```bash
+pnpm build:workers
+```
+
+`build:workers` はキャッシュ保存先を `.wrangler/cache/notion-api-cache.json` に固定します。
+Workers/Pages 側の Build command も `pnpm build:workers` にすると、ビルドキャッシュを使って前回結果を再利用しやすくなります。
+
 ## プロジェクト構造
 
 ```

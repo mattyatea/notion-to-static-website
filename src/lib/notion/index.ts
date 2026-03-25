@@ -11,7 +11,7 @@ export { getFromCacheOrFetch, clearCache } from "./cache";
 export { clearDataSourceIdCache } from "./query";
 
 // Database operations
-export { formatPage, formatPages, getFormattedDatabase } from "./database";
+export { formatPage, formatPages, getDatabaseRevision, getFormattedDatabase } from "./database";
 
 // Page operations
 export { getPage, getBlocks, getFormattedPage, getPageBySlug } from "./page";

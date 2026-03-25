@@ -32,7 +32,7 @@ try {
 >
   <section class="mb-12">
     <div class="flex justify-between items-center mb-6">
-      <h2 class="text-2xl font-bold">最新の記事</h2>
+      <h2 class="text-2xl font-bold" data-i18n="home.latestPosts">最新の記事</h2>
       <a
         href="/posts"
         class="text-blue-600 dark:text-blue-400 hover:underline"
@@ -41,7 +41,7 @@ try {
           item_list_name: 'all_posts',
           source: 'home_recent_posts',
         })}
-      >すべての記事を見る</a
+      ><span data-i18n="home.viewAllPosts">すべての記事を見る</span></a
       >
     </div>
 
@@ -49,7 +49,8 @@ try {
       error && (
         <div class="bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded mb-6">
           <p>
-            <strong>エラー:</strong> データの取得に失敗しました。
+            <strong data-i18n="common.error">エラー:</strong>
+            <span data-i18n="common.fetchFailed">データの取得に失敗しました。</span>
           </p>
           <p class="text-sm">{error}</p>
         </div>
@@ -60,7 +61,7 @@ try {
 
     {
       recentPosts.length === 0 && !error ? (
-        <p class="text-gray-500 dark:text-gray-400">投稿がまだありません。</p>
+        <p class="text-gray-500 dark:text-gray-400" data-i18n="home.emptyPosts">投稿がまだありません。</p>
       ) : (
         <div class="grid gap-6 md:grid-cols-2">
           {recentPosts.map((post) => (

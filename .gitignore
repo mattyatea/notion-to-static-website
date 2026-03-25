@@ -35,3 +35,5 @@ vitest.config.ts.timestamp-*
 
 .wrangler/
 
+# persistent build cache
+.cache/

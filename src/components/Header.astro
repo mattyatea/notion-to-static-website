@@ -1,5 +1,4 @@
 ---
-import ThemeToggle from './ThemeToggle.astro';
 const { siteName } = Astro.props;
 ---
 
@@ -18,7 +17,7 @@ const { siteName } = Astro.props;
         <ul class="flex space-x-6">
           <li>
             <a href="/" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-              ホーム
+              <span data-i18n="nav.home">ホーム</span>
             </a>
           </li>
           <li>
@@ -31,12 +30,20 @@ const { siteName } = Astro.props;
                 source: 'header_nav',
               })}
             >
-              ブログ
+              <span data-i18n="nav.blog">ブログ</span>
             </a>
           </li>
         </ul>
       </nav>
-      <ThemeToggle />
+      <label class="sr-only" for="language-select" data-i18n="nav.language">言語</label>
+      <select
+        id="language-select"
+        class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-sm rounded-md px-2 py-1"
+        aria-label="Language"
+      >
+        <option value="ja" data-i18n="nav.languageJapanese">日本語</option>
+        <option value="en" data-i18n="nav.languageEnglish">English</option>
+      </select>
     </div>
   </div>
 </header>

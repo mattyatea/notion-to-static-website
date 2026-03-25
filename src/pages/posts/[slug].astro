@@ -50,6 +50,8 @@ const articleStructuredData = page
 
 // エラーメッセージ（getStaticPaths が空を返すと post は undefined になる）
 const error = !page ? 'ページが見つかりませんでした。' : null;
+const publishDateIso = page?.date ? new Date(page.date).toISOString() : '';
+const fallbackPublishDate = page?.date ? new Date(page.date).toLocaleDateString('ja-JP') : '';
 ---
 
 <BaseLayout
@@ -67,9 +69,10 @@ const error = !page ? 'ページが見つかりませんでした。' : null;
     error ? (
       <div class="bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded mb-6">
         <p>
-          <strong>エラー:</strong> ページの取得に失敗しました。
+          <strong data-i18n="common.error">エラー:</strong>
+          <span data-i18n="common.pageFetchFailed">ページの取得に失敗しました。</span>
         </p>
-        <p class="text-sm">{error}</p>
+        <p class="text-sm" data-i18n="post.notFound">{error}</p>
         <a
           href="/posts"
           class="inline-block mt-3 text-blue-500 dark:text-blue-400 hover:underline"
@@ -79,7 +82,7 @@ const error = !page ? 'ページが見つかりませんでした。' : null;
             source: 'post_detail_error',
           })}
         >
-          ← 一覧に戻る
+          <span data-i18n="post.backToList">← 一覧に戻る</span>
         </a>
       </div>
     ) : (
@@ -94,7 +97,7 @@ const error = !page ? 'ページが見つかりませんでした。' : null;
               source: 'post_detail',
             })}
           >
-            ← 一覧に戻る
+            <span data-i18n="post.backToList">← 一覧に戻る</span>
           </a>
         </div>
 
@@ -103,7 +106,13 @@ const error = !page ? 'ページが見つかりませんでした。' : null;
             <h1 class="text-3xl font-bold mb-3">{title}</h1>
 
             <div class="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">
-              {page?.date && <div>公開日: {new Date(page?.date).toLocaleDateString('ja-JP')}</div>}
+              {
+                page?.date && (
+                  <time datetime={publishDateIso} data-publish-date={publishDateIso} data-i18n-date-label="post.publishedDate">
+                    公開日: {fallbackPublishDate}
+                  </time>
+                )
+              }
             </div>
 
             {page?.tags && page?.tags.length > 0 && (

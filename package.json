@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "build:diff": "cross-env NOTION_CACHE_PERSIST=1 astro build",
+    "build:workers": "cross-env NOTION_CACHE_PERSIST=1 NOTION_CACHE_FILE=.wrangler/cache/notion-api-cache.json astro build",
     "preview": "astro preview",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

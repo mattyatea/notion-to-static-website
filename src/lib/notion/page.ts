@@ -1,6 +1,6 @@
 import { notion, NOTION_DATABASE_ID, log } from "./client";
 import { getFromCacheOrFetch } from "./cache";
-import { formatPage, getFormattedDatabase } from "./database";
+import { formatPage, getDatabaseRevision, getFormattedDatabase } from "./database";
 import type { PageResponse, NotionBlockWithChildren, FormattedPage } from "@/types/notion";
 import { isPageResponse } from "@/types/notion";
 import type { GetPageResponse } from "@notionhq/client/build/src/api-endpoints";
@@ -168,7 +168,8 @@ export async function getPageBySlug(slug: string): Promise<FormattedPage | null>
   }
 
   const normalizedSlug = trimmedSlug.toLowerCase();
-  const cacheKey = `page-by-slug:${normalizedSlug}`;
+  const revision = await getDatabaseRevision(true, "Public");
+  const cacheKey = `page-by-slug:${normalizedSlug}:${revision}`;
   log("info", `Getting page by slug`, { requested: slug, normalized: normalizedSlug });
 
   return getFromCacheOrFetch(cacheKey, async () => {

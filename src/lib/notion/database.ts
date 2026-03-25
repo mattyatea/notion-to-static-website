@@ -124,64 +124,116 @@ export async function getFormattedDatabase(
     `Getting formatted database (filter by status: ${filterByStatus}, status: ${status})`,
   );
 
-  return getFromCacheOrFetch(`formatted-database:${filterByStatus}:${status}`, async () => {
-    try {
-      interface QueryOptions {
-        sorts: {
-          property: string;
-          direction: "ascending" | "descending";
-        }[];
-        filter?: {
-          property: string;
-          select: {
-            equals: string;
+  const revision = await getDatabaseRevision(filterByStatus, status);
+
+  return getFromCacheOrFetch(
+    `formatted-database:${filterByStatus}:${status}:${revision}`,
+    async () => {
+      try {
+        interface QueryOptions {
+          sorts: {
+            property: string;
+            direction: "ascending" | "descending";
+          }[];
+          filter?: {
+            property: string;
+            select: {
+              equals: string;
+            };
           };
+          start_cursor?: string;
+        }
+
+        const queryOptions: QueryOptions = {
+          sorts: [{ property: "date", direction: "descending" }],
         };
-        start_cursor?: string;
+
+        if (filterByStatus) {
+          queryOptions.filter = {
+            property: "status",
+            select: { equals: status },
+          };
+        }
+
+        let allPages: PageResponse[] = [];
+        let hasMore = true;
+        let cursor: string | undefined;
+
+        while (hasMore) {
+          const response = await queryNotionCollection(databaseId, {
+            ...queryOptions,
+            ...(cursor ? { start_cursor: cursor } : {}),
+          });
+
+          allPages = [...allPages, ...response.results];
+          hasMore = response.has_more;
+          cursor = response.next_cursor || undefined;
+        }
+
+        log("debug", `Found ${allPages.length} pages in database`);
+
+        return formatPages(allPages);
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : "不明なエラー";
+        log("error", "Failed to format database:", error);
+
+        let detailedMessage = `データベースの取得・整形に失敗しました: ${errorMsg}`;
+
+        if (errorMsg.includes("404")) {
+          detailedMessage = `データベースが見つかりません (ID: ${NOTION_DATABASE_ID})`;
+        } else if (errorMsg.includes("401") || errorMsg.includes("403")) {
+          detailedMessage = `データベースへのアクセス権限がありません (ID: ${NOTION_DATABASE_ID})`;
+        }
+
+        throw new Error(detailedMessage);
+      }
+    },
+  );
+}
+
+export async function getDatabaseRevision(
+  filterByStatus = true,
+  status = "Public",
+): Promise<string> {
+  if (!NOTION_DATABASE_ID) {
+    const error = new Error("NOTION_DATABASE_IDが設定されていません");
+    log("error", error.message);
+    throw error;
+  }
+
+  const databaseId = NOTION_DATABASE_ID;
+
+  return getFromCacheOrFetch(
+    `database-revision:${filterByStatus}:${status}`,
+    async () => {
+      const response = await queryNotionCollection(databaseId, {
+        page_size: 1,
+        ...(filterByStatus
+          ? {
+              filter: {
+                property: "status",
+                select: { equals: status },
+              },
+            }
+          : {}),
+        sorts: [
+          {
+            timestamp: "last_edited_time",
+            direction: "descending",
+          },
+        ],
+      });
+
+      const latest = response.results[0];
+      if (!latest) {
+        return "empty";
       }
 
-      const queryOptions: QueryOptions = {
-        sorts: [{ property: "date", direction: "descending" }],
-      };
-
-      if (filterByStatus) {
-        queryOptions.filter = {
-          property: "status",
-          select: { equals: status },
-        };
-      }
-
-      let allPages: PageResponse[] = [];
-      let hasMore = true;
-      let cursor: string | undefined;
-
-      while (hasMore) {
-        const response = await queryNotionCollection(databaseId, {
-          ...queryOptions,
-          ...(cursor ? { start_cursor: cursor } : {}),
-        });
-
-        allPages = [...allPages, ...response.results];
-        hasMore = response.has_more;
-        cursor = response.next_cursor || undefined;
-      }
-
-      log("debug", `Found ${allPages.length} pages in database`);
-
-      return formatPages(allPages);
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : "不明なエラー";
-      log("error", "Failed to format database:", error);
-
-      let detailedMessage = `データベースの取得・整形に失敗しました: ${errorMsg}`;
-
-      if (errorMsg.includes("404")) {
-        detailedMessage = `データベースが見つかりません (ID: ${NOTION_DATABASE_ID})`;
-      } else if (errorMsg.includes("401") || errorMsg.includes("403")) {
-        detailedMessage = `データベースへのアクセス権限がありません (ID: ${NOTION_DATABASE_ID})`;
-      }
-
-      throw new Error(detailedMessage);
-    }
-  });
+      return `${latest.id}:${latest.last_edited_time}`;
+    },
+    {
+      ttl: 60 * 1000,
+      refreshThreshold: 0.8,
+    },
+  );
 }

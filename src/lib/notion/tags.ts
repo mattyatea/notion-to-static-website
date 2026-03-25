@@ -1,7 +1,7 @@
 import type { FormattedPage } from "@/types/notion";
 import { NOTION_DATABASE_ID, log } from "./client";
 import { getFromCacheOrFetch } from "./cache";
-import { formatPages, getFormattedDatabase } from "./database";
+import { formatPages, getDatabaseRevision, getFormattedDatabase } from "./database";
 import { queryNotionCollection } from "./query";
 
 /** タグでページをフィルタリングする */
@@ -15,9 +15,10 @@ export async function getPagesByTag(tag: string): Promise<FormattedPage[]> {
   const dataSourceId = NOTION_DATABASE_ID;
 
   log("info", `Getting pages by tag: ${tag}`);
+  const revision = await getDatabaseRevision(true, "Public");
 
   // キャッシュから取得または新規フェッチ
-  return getFromCacheOrFetch(`pages-by-tag:${tag}`, async () => {
+  return getFromCacheOrFetch(`pages-by-tag:${tag}:${revision}`, async () => {
     try {
       const response = await queryNotionCollection(dataSourceId, {
         filter: {
@@ -47,9 +48,10 @@ export async function getPagesByTag(tag: string): Promise<FormattedPage[]> {
 /** すべてのタグを取得する */
 export async function getAllTags(): Promise<string[]> {
   log("info", "Getting all tags");
+  const revision = await getDatabaseRevision(true, "Public");
 
   // キャッシュから取得または新規フェッチ
-  return getFromCacheOrFetch("all-tags", async () => {
+  return getFromCacheOrFetch(`all-tags:${revision}`, async () => {
     try {
       const pages = await getFormattedDatabase();
       const tagsSet = new Set<string>();
@@ -83,9 +85,10 @@ export async function getPagesByCategory(category: string): Promise<FormattedPag
   const dataSourceId = NOTION_DATABASE_ID;
 
   log("info", `Getting pages by category: ${category}`);
+  const revision = await getDatabaseRevision(true, "Public");
 
   // キャッシュから取得または新規フェッチ
-  return getFromCacheOrFetch(`pages-by-category:${category}`, async () => {
+  return getFromCacheOrFetch(`pages-by-category:${category}:${revision}`, async () => {
     try {
       const response = await queryNotionCollection(dataSourceId, {
         filter: {
@@ -115,9 +118,10 @@ export async function getPagesByCategory(category: string): Promise<FormattedPag
 /** すべてのカテゴリを取得する */
 export async function getAllCategories(): Promise<string[]> {
   log("info", "Getting all categories");
+  const revision = await getDatabaseRevision(true, "Public");
 
   // キャッシュから取得または新規フェッチ
-  return getFromCacheOrFetch("all-categories", async () => {
+  return getFromCacheOrFetch(`all-categories:${revision}`, async () => {
     try {
       const pages = await getFormattedDatabase();
       const categoriesSet = new Set<string>();

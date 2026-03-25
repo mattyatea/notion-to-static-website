@@ -4,6 +4,8 @@
  */
 
 import type { CacheConfig } from "@/types/notion";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
 import { log } from "./client";
 
 const DEFAULT_CACHE_CONFIG: CacheConfig = {
@@ -18,6 +20,64 @@ interface CacheItem<T> {
 }
 
 const cache: Record<string, CacheItem<unknown>> = {};
+const defaultCacheFile = process.env.CF_PAGES
+  ? ".wrangler/cache/notion-api-cache.json"
+  : ".cache/notion-api-cache.json";
+const PERSISTENT_CACHE_FILE = resolve(
+  process.cwd(),
+  process.env.NOTION_CACHE_FILE || defaultCacheFile,
+);
+
+const shouldPersistCache =
+  process.env.NODE_ENV !== "test" && process.env.NOTION_CACHE_PERSIST === "1";
+
+let persistentCacheLoaded = false;
+
+function loadPersistentCache(): void {
+  if (!shouldPersistCache || persistentCacheLoaded) {
+    return;
+  }
+
+  persistentCacheLoaded = true;
+
+  if (!existsSync(PERSISTENT_CACHE_FILE)) {
+    return;
+  }
+
+  try {
+    const raw = readFileSync(PERSISTENT_CACHE_FILE, "utf-8");
+    const parsed = JSON.parse(raw) as Record<string, CacheItem<unknown>>;
+
+    Object.entries(parsed).forEach(([key, value]) => {
+      if (
+        value &&
+        typeof value === "object" &&
+        typeof value.timestamp === "number" &&
+        typeof value.expiresAt === "number" &&
+        "data" in value
+      ) {
+        cache[key] = value;
+      }
+    });
+
+    log("debug", `Loaded persistent Notion cache from ${PERSISTENT_CACHE_FILE}`);
+  } catch (error) {
+    log("warn", `Failed to load persistent cache: ${PERSISTENT_CACHE_FILE}`, error);
+  }
+}
+
+function persistCacheToDisk(): void {
+  if (!shouldPersistCache) {
+    return;
+  }
+
+  try {
+    mkdirSync(dirname(PERSISTENT_CACHE_FILE), { recursive: true });
+    writeFileSync(PERSISTENT_CACHE_FILE, JSON.stringify(cache), "utf-8");
+  } catch (error) {
+    log("warn", `Failed to persist cache: ${PERSISTENT_CACHE_FILE}`, error);
+  }
+}
 
 /**
  * Get data from cache or fetch fresh data with automatic background refresh
@@ -31,6 +91,7 @@ export async function getFromCacheOrFetch<T>(
   fetchFn: () => Promise<T>,
   config: CacheConfig = DEFAULT_CACHE_CONFIG,
 ): Promise<T> {
+  loadPersistentCache();
   const now = Date.now();
   const cachedItem = cache[key];
 
@@ -45,6 +106,7 @@ export async function getFromCacheOrFetch<T>(
               timestamp: Date.now(),
               expiresAt: Date.now() + config.ttl,
             };
+            persistCacheToDisk();
             log("debug", `Cache refreshed in background: ${key}`);
           })
           .catch((err) => {
@@ -64,6 +126,7 @@ export async function getFromCacheOrFetch<T>(
       timestamp: now,
       expiresAt: now + config.ttl,
     };
+    persistCacheToDisk();
 
     return data;
   } catch (error) {
@@ -83,6 +146,8 @@ export async function getFromCacheOrFetch<T>(
  * @param keyPrefix Optional prefix to clear specific entries only
  */
 export function clearCache(keyPrefix?: string): void {
+  loadPersistentCache();
+
   if (keyPrefix) {
     Object.keys(cache).forEach((key) => {
       if (key.startsWith(keyPrefix)) {
@@ -96,4 +161,6 @@ export function clearCache(keyPrefix?: string): void {
     });
     log("info", "Cleared all cache");
   }
+
+  persistCacheToDisk();
 }

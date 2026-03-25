@@ -10,7 +10,9 @@ const currentYear = new Date().getFullYear();
 <footer class="py-6 border-t border-gray-200 dark:border-gray-800">
   <div class="flex flex-col md:flex-row justify-between items-center gap-4">
     <div>
-      <p>&copy; {currentYear} {siteName} All rights reserved.</p>
+      <p>
+        &copy; {currentYear} {siteName} <span data-i18n="footer.rightsReserved">All rights reserved.</span>
+      </p>
     </div>
     <div>
       <ul class="flex space-x-4">

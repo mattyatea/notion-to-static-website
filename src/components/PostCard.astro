@@ -14,8 +14,8 @@ export interface Props {
 
 const { title, summary, publishDate, url, tags = [], coverImage, trackingSource = 'unknown' } = Astro.props;
 
-// 日付のフォーマット
-const formattedDate = new Date(publishDate).toLocaleDateString('ja-JP', {
+const publishDateIso = new Date(publishDate).toISOString();
+const fallbackPublishDate = new Date(publishDate).toLocaleDateString('ja-JP', {
   year: 'numeric',
   month: 'long',
   day: 'numeric',
@@ -27,6 +27,8 @@ const formattedDate = new Date(publishDate).toLocaleDateString('ja-JP', {
     <a
       href={url}
       aria-label={`${title}を読む`}
+      data-i18n-aria-label="postCard.readAria"
+      data-i18n-aria-label-vars={JSON.stringify({ title })}
       class="absolute inset-0 z-30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
       data-ga-event="select_content"
       data-ga-params={JSON.stringify({
@@ -45,7 +47,7 @@ const formattedDate = new Date(publishDate).toLocaleDateString('ja-JP', {
         />
       ) : (
         <div class="grid h-full place-items-center bg-gradient-to-br from-gray-100 via-gray-50 to-gray-200 text-gray-500 dark:from-gray-800 dark:via-gray-800 dark:to-gray-700 dark:text-gray-400">
-          <span class="text-xs tracking-[0.12em] uppercase">No Image</span>
+          <span class="text-xs tracking-[0.12em] uppercase" data-i18n="postCard.noImage">画像なし</span>
         </div>
       )}
     </div>
@@ -65,9 +67,7 @@ const formattedDate = new Date(publishDate).toLocaleDateString('ja-JP', {
         }
       </div>
 
-      <div class="text-sm text-gray-500 dark:text-gray-400 row-start-4">
-        {formattedDate}
-      </div>
+      <time class="text-sm text-gray-500 dark:text-gray-400 row-start-4" datetime={publishDateIso} data-publish-date={publishDateIso}>{fallbackPublishDate}</time>
     </div>
   </div>
 </article>
